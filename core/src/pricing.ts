@@ -1,4 +1,4 @@
-import type { Promo, TicketLine } from './types';
+import type { Promo, TicketLine } from '.';
 
 // ─── Calcul des prix ──────────────────────────────────────────────────────────
 

@@ -151,5 +151,6 @@ export { calculateLineTotal, calculateTicketTotal, effectiveUnitPrice } from './
 export { getCommercialDay, commercialDayNumber, isInCurrentCommercialDay } from './commercialDay';
 export { getStockStatus, weightedAverageCost, calculateTheoreticalStock, ticketBottles } from './stock';
 export { calculateInventoryGap, calculateGapValue, checkCoherence, isTicketModifiable, remainingMinutes, isSuspectHour } from './inventory';
+export type { SyncStatus, DataService, AuditEntry } from './dataService';
 
 

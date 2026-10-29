@@ -25,7 +25,7 @@ export function getCommercialDay(date: Date): Date {
   ));
   // If current UTC time is before 03:00, commercial day started yesterday
   if (utcMs < dayStartUtc.getTime()) {
-    dayStartUtc.setUTCTime(dayStartUtc.getTime() - 24 * 60 * 60 * 1000);
+    dayStartUtc.setTime(dayStartUtc.getTime() - 24 * 60 * 60 * 1000);
   }
   return dayStartUtc;
 }

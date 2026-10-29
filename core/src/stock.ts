@@ -1,4 +1,4 @@
-import type { RavitaillementEvent, CorrectionEvent, CasseEvent, TicketEvent } from './types';
+import type { RavitaillementEvent, CorrectionEvent, CasseEvent, TicketEvent } from '.';
 
 // ─── Statut du stock ──────────────────────────────────────────────────────────
 
