@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarPro — Carte Boisson (composant réutilisable)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--forest:#0B3322;--forest-deep:#06231A;--sous-bois:#1F5C3F;--paper:#F5F8F3;--citron:#8BFA5A;--alert:#F5B841;--error:#FF6B5B;--neutral:#5E7266;--lime-soft:#D9FBC8;--line:#DCE6DD;--font:'Inter',-apple-system,'SF Pro Display',Helvetica Neue,Arial,sans-serif;--mono:'JetBrains Mono',ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:#0B1F16;background:#E9EEE9}
+
+.demo-controls{max-width:1200px;margin:0 auto 24px;padding:16px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.demo-controls label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--neutral)}
+.demo-controls select,.demo-controls button{height:36px;border-radius:999px;border:0;background:white;box-shadow:var(--shadow);padding:0 14px;font-size:13px;font-weight:600;cursor:pointer}
+.demo-controls button.on{background:var(--forest);color:var(--citron)}
+.demo-controls .sep{width:1px;height:24px;background:var(--line)}
+
+.grid{display:grid;gap:16px;padding:0 24px 48px;max-width:1200px;margin:0 auto}
+.grid-cols-2{grid-template-columns:repeat(2,1fr)}
+.grid-cols-3{grid-template-columns:repeat(3,1fr)}
+.grid-cols-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:639px){.grid-cols-4{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:640px)and(max-width:1023px){.grid-cols-2{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1024px){.grid-cols-2{grid-template-columns:repeat(4,1fr)}}
+
+.bcard{background:white;border-radius:24px;border:1px solid var(--lime-soft);box-shadow:var(--shadow);overflow:hidden;position:relative;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;cursor:pointer;min-height:260px}
+.bcard:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(11,31,22,.12),0 12px 32px rgba(11,31,22,.10)}
+.bcard:active{transform:scale(.98)}
+.bcard.out{opacity:.55;cursor:not-allowed;pointer-events:none}
+.bcard.out .ribbon{filter:saturate(.3);opacity:.6}
+.bcard.out .photo-zone{filter:grayscale(.6)}
+.bcard.compact{min-height:180px}
+.bcard.compact .ribbon{font-size:11px;padding:3px 10px}
+.bcard.compact .ribbon span.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.bcard.compact .photo-zone{height:70px}
+.bcard.compact .name{font-size:12px;line-height:14px;max-height:28px;overflow:hidden}
+.bcard.compact .meta-row{display:none}
+.bcard.compact .status-pill{display:none}
+.bcard.compact .foot{display:none}
+.bcard.compact .state-dot{width:28px;height:28px}
+.bcard.compact .state-dot svg{width:14px;height:14px}
+
+.photo-zone{height:110px;display:grid;place-items:center;position:relative;background:var(--paper);border-radius:16px 16px 0 0;overflow:hidden;flex-shrink:0}
+.photo-zone img{width:64px;height:90px;object-fit:contain;border-radius:6px}
+.photo-zone .tile{width:64px;height:90px;border-radius:12px;display:grid;place-items:center}
+.photo-zone .tile svg{width:28px;height:28px;stroke:#0B1F16;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+
+.ribbon{position:absolute;top:0;left:0;z-index:2;writing-mode:horizontal-tb;transform:rotate(-45deg) translate(-18px,18px);transform-origin:top left;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 22px;border-radius:0 0 4px 0;white-space:nowrap;pointer-events:none}
+.ribbon.petit{background:#2F6FEB;color:#fff}
+.ribbon.grand{background:#F28C28;color:#0B3322}
+.ribbon.cannette{background:#D92D20;color:#fff}
+
+.state-dot{position:absolute;top:10px;right:10px;z-index:2;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.state-dot svg{width:18px;height:18px;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;fill:none}
+.state-dot.ok{background:var(--lime-soft)}
+.state-dot.ok svg{stroke:#0B3322}
+.state-dot.low{background:#FDF0CF;animation:pulse 2s ease-in-out infinite}
+.state-dot.low svg{stroke:#7A5300}
+.state-dot.out{background:#FFE1DD}
+.state-dot.out svg{stroke:#9A2A1E}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.75;transform:scale(1.06)}}
+@media(prefers-reduced-motion:reduce){.state-dot.low{animation:none;border:2px solid var(--alert)}}
+
+.body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.name{font-weight:700;font-size:13px;line-height:17px;color:var(--forest-deep);text-align:center;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px}
+.meta-row{display:flex;justify-content:space-between;align-items:baseline}
+.meta-row .fmt{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--neutral)}
+.meta-row .price{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--forest-deep);text-align:right}
+.meta-row .promo{font-size:10px;color:var(--sous-bois);font-weight:600;text-align:right;margin-top:1px}
+.divider{height:1px;background:var(--line);margin:2px 0}
+.foot{display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.foot .bottles{display:flex;align-items:center;gap:4px;font-weight:700;color:var(--forest-deep)}
+.foot .bottles svg{width:14px;height:14px;stroke:var(--forest-deep);fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.foot .cases{color:var(--neutral)}
+.status-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;margin:0 auto}
+.status-pill.ok{background:var(--lime-soft);color:var(--forest-deep)}
+.status-pill.low{background:#FDF0CF;color:#7A5300;animation:pulse 2s ease-in-out infinite}
+.status-pill.out{background:#FFE1DD;color:#9A2A1E}
+@media(prefers-reduced-motion:reduce){.status-pill.low{animation:none;border:1.5px solid var(--alert)}}
+.status-pill svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+.qty-badge{position:absolute;bottom:8px;right:8px;z-index:3;background:var(--forest);color:var(--citron);border-radius:999px;display:flex;align-items:center;gap:4px;font-family:var(--mono);font-size:13px;font-weight:700;min-width:36px;height:36px;padding:0 8px;box-shadow:0 2px 8px rgba(6,35,26,.3)}
+.qty-badge button{background:none;border:none;color:var(--citron);font-size:16px;font-weight:700;cursor:pointer;width:24px;height:24px;display:grid;place-items:center;border-radius:50%}
+.qty-badge button:hover{background:rgba(139,250,90,.2)}
+</style>
+</head>
+<body>
+
+<div class="demo-controls">
+  <label for="colSel">Colonnes</label>
+  <button id="col2" class="on" onclick="setCols(2)">2</button>
+  <button id="col3" onclick="setCols(3)">3</button>
+  <button id="col4" onclick="setCols(4)">4</button>
+  <div class="sep"></div>
+  <label for="modeSel">Mode</label>
+  <button id="modeNorm" class="on" onclick="setMode('normal')">Normal</button>
+  <button id="modeCompact" onclick="setMode('compact')">Compact</button>
+  <div class="sep"></div>
+  <label for="catSel">Catégorie</label>
+  <select id="catSel" onchange="render()">
+    <option value="all">Toutes</option>
+    <option value="Bières">Bières</option>
+    <option value="Sucreries">Sucreries</option>
+    <option value="Eaux minérales">Eaux minérales</option>
+  </select>
+</div>
+
+<div id="app" class="grid grid-cols-2"></div>
+
+<script>
+const BOISSONS=[
+{ id:'beaufort-g',name:'Beaufort',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:800,promo:null,stock:18,tile:'#E8D3B5',photo:'boissons/BIERES/Grand/BEAUFORT.jpg' },
+{ id:'benin-g',name:'La Béninoise',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:700,promo:null,stock:14,tile:'#F7D9C4',photo:'boissons/BIERES/Grand/BENINOISE.jpg' },
+{ id:'castel-g',name:'Castel',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:800,promo:null,stock:32,tile:'#FCE7B0',photo:'boissons/BIERES/Grand/CASTEL BIERE.jpg' },
+{ id:'doppel-g',name:'Doppel Munich',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:900,promo:null,stock:6,tile:'#F5E6C8',photo:'boissons/BIERES/Grand/DOPPEL MUNICH.jpg' },
+{ id:'flag-g',name:'Flag',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:750,promo:null,stock:0,tile:'#E8D8C8',photo:'boissons/BIERES/Grand/FLAG.jpg' },
+{ id:'hagbe-g',name:'Hagbé',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:800,promo:null,stock:10,tile:'#F0D4B0',photo:'boissons/BIERES/Grand/HAGBE.jpg' },
+{ id:'kankpe-g',name:'Kankpé',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:650,promo:null,stock:3,tile:'#E8C8A8',photo:'boissons/BIERES/Grand/Kankpe.jpg' },
+{ id:'pils-g',name:'Pils',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:800,promo:null,stock:20,tile:'#F5E8C0',photo:'boissons/BIERES/Grand/PILS.jpg' },
+{ id:'racines-g',name:'Racines',fmt:'65 cl',size:'Grand',cat:'Bières',bpc:12,price:750,promo:null,stock:8,tile:'#F0D8B8',photo:'boissons/BIERES/Grand/RACINES-.jpg' },
+{ id:'beaufort-p',name:'Beaufort',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:500,promo:null,stock:24,tile:'#D8C8A8',photo:'boissons/BIERES/Petit/BEAUFORT.jpg' },
+{ id:'benin-p',name:'La Béninoise',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:450,promo:null,stock:12,tile:'#E8C8B4',photo:'boissons/BIERES/Petit/BENINOISE.jpg' },
+{ id:'desperado-p',name:'Desperados',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:600,promo:null,stock:0,tile:'#F5D8A0',photo:'boissons/BIERES/Petit/DESPERADO.jpg' },
+{ id:'eku-p',name:'Eku',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:550,promo:null,stock:18,tile:'#F0E8D0',photo:'boissons/BIERES/Petit/EKU.jpg' },
+{ id:'guiness-p',name:'Guinness',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:700,promo:null,stock:6,tile:'#D8D0C8',photo:'boissons/BIERES/Petit/GUINESS.jpg' },
+{ id:'hagbe-p',name:'Hagbé',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:500,promo:null,stock:30,tile:'#E0C8A0',photo:'boissons/BIERES/Petit/HAGBE.jpg' },
+{ id:'heineken-p',name:'Heineken',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:800,promo:{n:3,p:2000},stock:28,tile:'#C8E8D0',photo:'boissons/BIERES/Petit/HEINEKEN.jpg' },
+{ id:'kankpe-p',name:'Kankpé',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:450,promo:null,stock:0,tile:'#D8C0A0',photo:'boissons/BIERES/Petit/Kankpe.jpg' },
+{ id:'pils-p',name:'Pils',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:500,promo:null,stock:36,tile:'#E8D8B8',photo:'boissons/BIERES/Petit/PILS.jpg' },
+{ id:'racines-p',name:'Racines',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:480,promo:null,stock:15,tile:'#E8D0B0',photo:'boissons/BIERES/Petit/RACINES-.jpg' },
+{ id:'savana-p',name:'Savana',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:400,promo:null,stock:42,tile:'#D8E8C0',photo:'boissons/BIERES/Petit/SAVANA.jpg' },
+{ id:'sombreros-p',name:'Sombreros',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:550,promo:null,stock:0,tile:'#F0D0A8',photo:'boissons/BIERES/Petit/SOMBREROS.jpg' },
+{ id:'valmont-p',name:'Valmont',fmt:'33 cl',size:'Petit',cat:'Bières',bpc:24,price:480,promo:null,stock:20,tile:'#D8D8C8',photo:'boissons/BIERES/Petit/VALMONT.jpg' },
+{ id:'beaufort-c',name:'Beaufort',fmt:'33 cl',size:'Cannette',cat:'Bières',bpc:24,price:550,promo:null,stock:48,tile:'#D0C0A0',photo:'boissons/BIERES/Cannettes/BEAUFORT CANNETTE.jpg' },
+{ id:'benin-c',name:'La Béninoise',fmt:'33 cl',size:'Cannette',cat:'Bières',bpc:24,price:500,promo:null,stock:24,tile:'#E0C0B0',photo:'boissons/BIERES/Cannettes/BENINOISE CANNETTES.jpg' },
+{ id:'legend-c',name:'Legend',fmt:'33 cl',size:'Cannette',cat:'Bières',bpc:24,price:650,promo:null,stock:12,tile:'#E8D8C0',photo:'boissons/BIERES/Cannettes/CANNETTE LEGEND.jpg' },
+{ id:'star-c',name:'Star',fmt:'33 cl',size:'Cannette',cat:'Bières',bpc:24,price:600,promo:null,stock:0,tile:'#E0D8C8',photo:'boissons/BIERES/Cannettes/CANNETTE STAR.jpg' },
+{ id:'chill-c',name:'Chill Citron',fmt:'33 cl',size:'Cannette',cat:'Bières',bpc:24,price:500,promo:null,stock:36,tile:'#F0F8C0',photo:'boissons/BIERES/Cannettes/Chill citron.jpg' },
+{ id:'desperado-c',name:'Desperados',fmt:'33 cl',size:'Cannette',cat:'Bières',bpc:24,price:650,promo:null,stock:18,tile:'#F8E8A8',photo:'boissons/BIERES/Cannettes/DESPERADO CANNETTES.jpg' },
+{ id:'vody-c',name:'Vody Vodka',fmt:'50 cl',size:'Cannette',cat:'Bières',bpc:12,price:900,promo:null,stock:6,tile:'#D8E8F0',photo:'boissons/BIERES/Cannettes/VODY VADKA.jpg' },
+{ id:'pils-c',name:'Pils',fmt:'33 cl',size:'Cannette',cat:'Bières',bpc:24,price:500,promo:null,stock:42,tile:'#E8DCA8',photo:'boissons/BIERES/Cannettes/cannettes pils.jpg' },
+{ id:'comtesse',name:'Comtesse',fmt:'50 cl',size:'',cat:'Eaux minérales',bpc:12,price:300,promo:null,stock:36,tile:'#D3E8F7',photo:'boissons/EAUX MINÉRALES/COMTESSE.jpg' },
+{ id:'fifa',name:'Fifa',fmt:'50 cl',size:'',cat:'Eaux minérales',bpc:12,price:250,promo:null,stock:48,tile:'#C8D8F0',photo:'boissons/EAUX MINÉRALES/FIFA.jpg' },
+{ id:'kwabo',name:'Kwabo',fmt:'50 cl',size:'',cat:'Eaux minérales',bpc:12,price:280,promo:null,stock:24,tile:'#D0E0F0',photo:'boissons/EAUX MINÉRALES/KWABO.jpg' },
+{ id:'possotome',name:'Possotomè',fmt:'50 cl',size:'',cat:'Eaux minérales',bpc:12,price:300,promo:null,stock:60,tile:'#C8E0D0',photo:'boissons/EAUX MINÉRALES/POSSOTOME.jpg' },
+{ id:'moka-g',name:'Moka',fmt:'33 cl',size:'Grand',cat:'Sucreries',bpc:24,price:400,promo:null,stock:24,tile:'#E8D0B0',photo:'boissons/SUCRERIES/Grand/MOKA.jpg' },
+{ id:'wordcola-g',name:'Word Cola',fmt:'33 cl',size:'Grand',cat:'Sucreries',bpc:24,price:400,promo:{n:3,p:1000},stock:48,tile:'#F0C8C0',photo:'boissons/SUCRERIES/Grand/WORD COLA.jpg' },
+{ id:'youki-g',name:'Youki Plamplemousse',fmt:'33 cl',size:'Grand',cat:'Sucreries',bpc:24,price:400,promo:null,stock:12,tile:'#F8E8C0',photo:'boissons/SUCRERIES/Grand/YOUKI PLAMPLEMOUSSE.jpg' },
+{ id:'youzou-g',name:'Youzou',fmt:'33 cl',size:'Grand',cat:'Sucreries',bpc:24,price:350,promo:null,stock:36,tile:'#F5D8A8',photo:'boissons/SUCRERIES/Grand/YOUZOU.jpg' },
+{ id:'chill-p',name:'Chill Citron',fmt:'33 cl',size:'Petit',cat:'Sucreries',bpc:24,price:350,promo:null,stock:30,tile:'#F0F8D0',photo:'boissons/SUCRERIES/Petit/CHILL-CITRON.jpg' },
+{ id:'doppel-p',name:'Doppel Energy Malt',fmt:'33 cl',size:'Petit',cat:'Sucreries',bpc:24,price:500,promo:null,stock:18,tile:'#F8E0B0',photo:'boissons/SUCRERIES/Petit/DOPPEL-ENERGY-MALT.jpg' },
+{ id:'moka-p',name:'Moka',fmt:'33 cl',size:'Petit',cat:'Sucreries',bpc:24,price:350,promo:null,stock:42,tile:'#E8D4B8',photo:'boissons/SUCRERIES/Petit/MOKA.jpg' },
+{ id:'wordcola-p',name:'Word Cola',fmt:'33 cl',size:'Petit',cat:'Sucreries',bpc:24,price:350,promo:{n:3,p:900},stock:60,tile:'#F0C8C0',photo:'boissons/SUCRERIES/Petit/WORD COLA.jpg' },
+{ id:'xxl-p',name:'XXL',fmt:'33 cl',size:'Petit',cat:'Sucreries',bpc:24,price:400,promo:null,stock:0,tile:'#F8D8B0',photo:'boissons/SUCRERIES/Petit/XXL.jpg' },
+{ id:'youki-p',name:'Youki Plamplemousse',fmt:'33 cl',size:'Petit',cat:'Sucreries',bpc:24,price:350,promo:null,stock:24,tile:'#F8E8C8',photo:'boissons/SUCRERIES/Petit/YOUKI PLAMPLEMOUSSE.jpg' },
+{ id:'youzou-p',name:'Youzou',fmt:'33 cl',size:'Petit',cat:'Sucreries',bpc:24,price:300,promo:null,stock:36,tile:'#F5D8B8',photo:'boissons/SUCRERIES/Petit/YOUZOU.jpg' },
+];
+
+const ICO={bottle:'<path d="M9 3h6v3l1.5 3v9L15 21H9l-1.5-3V6L9 3z"/><path d="M9 3h6"/>',check:'<path d="M5 12l5 5L20 7"/>',alert:'<path d="M12 8v5M12 17h.01"/><path d="M10.3 3.9L2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',x:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',case:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>'};
+const ico=(p,w=14,c='currentColor')=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+
+let cols=2, mode='normal', catFilter='all', quantities={};
+
+function setCols(n){cols=n;document.querySelectorAll('.demo-controls button[id^="col"]').forEach(b=>b.classList.remove('on'));document.getElementById('col'+n).classList.add('on');render();}
+function setMode(m){mode=m;document.getElementById('modeNorm').classList.toggle('on',m==='normal');document.getElementById('modeCompact').classList.toggle('on',m==='compact');render();}
+
+function fmtPrice(n){return n.toLocaleString('fr-FR').replace(/\s/g,' ')+' F';}
+function casRes(bottles,bpc){const c=Math.floor(bottles/bpc),b=bottles%bpc;return b>0?`${c} casier${c>1?'s':''} + ${b} b.`:`${c} casier${c>1?'s':''}`;}
+function stkStatus(bottles,bpc){if(bottles===0)return 'out';if(bottles<bpc)return 'low';return 'ok';}
+function statusLabel(s,bottles,bpc){if(s==='ok')return{cls:'ok',label:'En stock',icon:ICO.check};if(s==='low')return{cls:'low',label:`Plus que ${bottles}`,icon:ICO.alert};return{cls:'out',label:'Épuisé',icon:ICO.x};}
+
+function render(){
+  catFilter=document.getElementById('catSel').value;
+  const filtered=catFilter==='all'?BOISSONS:BOISSONS.filter(b=>b.cat===catFilter);
+  const gc=cols===4?'grid-cols-4':cols===3?'grid-cols-3':'grid-cols-2';
+  document.getElementById('app').className='grid '+gc;
+  document.getElementById('app').innerHTML=filtered.map(b=>cardHTML(b)).join('');
+}
+
+function cardHTML(b){
+  const bpc=b.bpc||12;
+  const qty=quantities[b.id]??0;
+  const stk=stkStatus(b.stock,bpc);
+  const sl=statusLabel(stk,b.stock,bpc);
+  const isOut=stk==='out';
+  const ribbonCls=b.size==='Petit'?'petit':b.size==='Grand'?'grand':'cannette';
+  const ribbonText=b.size==='Petit'?'PETIT':b.size==='Grand'?'GRAND':'CANNETTE';
+  const compact=mode==='compact';
+  const ribbonShort=b.size==='Petit'?'P':b.size==='Grand'?'G':'C';
+  const promoHTML=b.promo?`<div class="promo">${b.promo.n} pour ${fmtPrice(b.promo.p)}</div>`:'';
+  const photoHTML=b.photo?`<img src="${b.photo}" alt="${b.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">`:'';
+  const tileHTML=b.photo?`<div class="tile" style="background:${b.tile};display:none">${ico(ICO.bottle,30)}</div>`:`<div class="tile" style="background:${b.tile}">${ico(ICO.bottle,30)}</div>`;
+  const stateIcon=sl.cls==='ok'?ico(ICO.check,18,'#0B3322'):sl.cls==='low'?ico(ICO.alert,18,'#7A5300'):ico(ICO.x,18,'#9A2A1E');
+  const qtyBadge=qty>0?`<div class="qty-badge"><button onclick="event.stopPropagation();changeQty('${b.id}',-1)">−</button>${qty}<button onclick="event.stopPropagation();changeQty('${b.id}',1)">+</button></div>`:'';
+  return `<div class="bcard ${compact?'compact ':''}${isOut?'out ':''}" data-id="${b.id}" onclick="addToCart('${b.id}')">
+    <div class="photo-zone">${photoHTML}${tileHTML}
+      <div class="ribbon ${ribbonCls}">${compact?`<span class="sr-only">${ribbonText}</span>${ribbonShort}`:ribbonText}</div>
+      <div class="state-dot ${sl.cls}">${stateIcon}</div>
+      ${qtyBadge}
+    </div>
+    <div class="body">
+      <div class="name">${b.name}</div>
+      <div class="meta-row"><span class="fmt">${b.fmt}</span><span class="price">${fmtPrice(b.price)}${promoHTML}</span></div>
+      <div class="status-pill ${sl.cls}">${ico(sl.icon,12)}${sl.label}</div>
+      <div class="divider"></div>
+      <div class="foot"><span class="bottles">${ico(ICO.bottle,14)} ${b.stock} b.</span><span class="cases">${casRes(b.stock,bpc)}</span></div>
+    </div>
+  </div>`;
+}
+
+function changeQty(id,d){quantities[id]=Math.max(0,(quantities[id]||0)+d);render();}
+function addToCart(id){const b=BOISSONS.find(x=>x.id===id);if(!b||b.stock===0)return;quantities[id]=(quantities[id]||0)+1;render();}
+
+render();
+</script>
+</body>
+</html>
