@@ -9,7 +9,7 @@ interface Declaration {
   productId: string;
   productName: string;
   qty: number;
-  motif: Motif | string;
+  motif: Motif;
   heure: string;
 }
 
@@ -19,14 +19,12 @@ function Casse() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [qty, setQty] = useState(1);
   const [motif, setMotif] = useState<Motif | null>(null);
-  const [autre, setAutre] = useState('');
   const [showConfirm, setShowConfirm] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     dataService.getProducts().then(setProducts);
-    // Load past declarations from casses events
     dataService.getCasses().then(async (events) => {
       const all: Declaration[] = [];
       for (const ev of events) {
@@ -36,7 +34,7 @@ function Casse() {
             productId: ev.productId,
             productName: p.name,
             qty: ev.quantity,
-            motif: ev.motif,
+            motif: ev.motif as Motif,
             heure: new Date(ev.createdAt).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
           });
         }
@@ -58,11 +56,10 @@ function Casse() {
     setSelectedProduct(product);
     setQty(1);
     setMotif(null);
-    setAutre('');
   };
 
   const handleConfirm = () => {
-    if (!motif || (!motif.includes('Autre') && !motif) || (motif === 'Autre' && !autre.trim())) {
+    if (!motif) {
       showToast('Veuillez choisir un motif');
       return;
     }
@@ -72,9 +69,6 @@ function Casse() {
   const handleDeclare = async () => {
     if (!selectedProduct || !motif) return;
     
-    const motifFinal = motif === 'Autre' ? autre : motif;
-    
-    // Save declaration
     const event: CasseEvent = {
       kind: 'casse',
       id: `casse-${Date.now()}`,
@@ -84,37 +78,30 @@ function Casse() {
       deviceId: 'device-demo',
       productId: selectedProduct.id,
       quantity: qty,
-      motif: motif === 'Autre' ? 'autre' : (motif as 'cassée' | 'defaillante' | 'perimee' | 'autre'),
-      motifDetail: motif === 'Autre' ? autre : undefined,
+      motif: motif === 'Cassé' ? 'cassée' : 'autre',
     };
     
     await dataService.addCasse(event);
     
-    // Add to local declarations list
     const newDecl: Declaration = {
       productId: selectedProduct.id,
       productName: selectedProduct.name,
       qty,
-      motif: motifFinal,
+      motif,
       heure: new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }),
     };
     setDeclarations(prev => [newDecl, ...prev]);
     
-    // Update stock
     const updatedProduct = { ...selectedProduct, stock: Math.max(0, (selectedProduct.stock ?? 0) - qty) };
     await dataService.saveProduct(updatedProduct);
     setProducts(prev => prev.map(p => p.id === selectedProduct.id ? updatedProduct : p));
     
-    // Reset
     setSelectedProduct(null);
     setQty(1);
     setMotif(null);
-    setAutre('');
     setShowConfirm(false);
     showToast('Casse déclarée. Stock mis à jour.');
   };
-
-  const fmtQ = (c: number, b: number) => c > 0 ? `${c} casier${c > 1 ? 's' : ''}${b > 0 ? ` + ${b} b.` : ''}` : `${b} b.`;
 
   return (
     <div className="min-h-screen bg-paper">
@@ -201,7 +188,7 @@ function Casse() {
                 {MOTIFS.map(m => (
                   <button
                     key={m}
-                    onClick={() => setMotif(m === 'Autre' ? 'Autre' : m)}
+                    onClick={() => setMotif(m)}
                     className={`w-full text-left px-4 py-3 rounded-xl border-2 transition-colors ${
                       motif === m ? 'border-forest bg-limeSoft text-forest-deep font-bold' : 'border-transparent bg-white text-neutral'
                     }`}
@@ -210,17 +197,6 @@ function Casse() {
                   </button>
                 ))}
               </div>
-              {motif === 'Autre' && (
-                <div className="mt-3">
-                  <label className="block text-xs font-semibold text-neutral mb-1">Précisez le motif</label>
-                  <textarea
-                    value={autre}
-                    onChange={e => setAutre(e.target.value)}
-                    placeholder="Ex: Bouchon défectueux, goût étranger..."
-                    className="w-full h-20 rounded-xl border-0 bg-white px-4 text-sm outline-none focus:ring-2 focus:ring-sous-bois/40 resize-none"
-                  />
-                </div>
-              )}
             </div>
 
             {/* Declare button */}
@@ -271,7 +247,7 @@ function Casse() {
               </div>
               <h3 className="text-lg font-extrabold text-forest-deep">Confirmer la casse ?</h3>
               <p className="text-sm text-neutral mt-2">
-                {qty} × {selectedProduct?.name} · {(motif === 'Autre' ? autre : motif)}
+                {qty} × {selectedProduct?.name} · {motif}
               </p>
               <p className="text-sm font-bold text-error mt-2">Cette déclaration ne peut pas être annulée.</p>
             </div>
