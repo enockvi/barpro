@@ -27,7 +27,7 @@ function App() {
         {activeTab === 'tickets' && <Tickets />}
         {activeTab === 'stock' && <Stock />}
         {activeTab === 'stockOwner' && <StockOwner />}
-        {activeTab === 'ravit' {activeTab === 'ravit' && <Ravitaillement />}{activeTab === 'ravit' && <Ravitaillement />} <Ravitaillement />
+        {activeTab === 'ravit' && <Ravitaillement />}
         {activeTab === 'casse' && <Casse />}
       </div>
 
