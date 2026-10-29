@@ -11,12 +11,15 @@ export interface Product {
   name: string;
   category: string;
   format: string;           // "65 cl", "33 cl", "1,5 L"
+  size: 'Petit' | 'Grand' | 'Cannette' | '';
   bottlesPerCase: number;   // bpc — obligatoire
   buyPricePerCase: number;  // prix d'achat par casier en F
   sellPrice: number | null; // prix de vente unitaire en F (null = "Prix à renseigner")
   promo: Promo | null;
   alertThreshold: number;   // en casiers (défaut: 1)
   active: boolean;
+  photoPath?: string;       // chemin relatif vers l'image
+  driveFileId?: string;     // id fichier Drive (si importé)
 }
 
 export type EventKind = 'ticket' | 'ravitaillement' | 'correction' | 'casse' | 'inventaire';
@@ -152,5 +155,6 @@ export { getCommercialDay, commercialDayNumber, isInCurrentCommercialDay } from 
 export { getStockStatus, weightedAverageCost, calculateTheoreticalStock, ticketBottles } from './stock';
 export { calculateInventoryGap, calculateGapValue, checkCoherence, isTicketModifiable, remainingMinutes, isSuspectHour } from './inventory';
 export type { SyncStatus, DataService, AuditEntry } from './dataService';
-
+export type { StockStatus } from './products';
+export { effectiveSellPrice, isSellable, productStockStatus, stockStatusLabel, getInitialProducts } from './products';
 
