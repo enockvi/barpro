@@ -368,17 +368,17 @@ function Ravitaillement() {
                   <div className="flex-1">
                     <label className="block text-[10px] text-neutral mb-1">Casiers</label>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => setEditCorrection(e => ({ ...e, deltaCasiers: e.deltaCasiers - 1 }))} className="w-8 h-8 rounded-full bg-paper border-0 text-sm font-bold">−</button>
+                      <button onClick={() => setEditCorrection(e => e ? {...e, deltaCasiers: e.deltaCasiers - 1} : null)} className="w-8 h-8 rounded-full bg-paper border-0 text-sm font-bold">−</button>
                       <span className="font-mono text-lg font-bold flex-1 text-center">{editCorrection.deltaCasiers}</span>
-                      <button onClick={() => setEditCorrection(e => ({ ...e, deltaCasiers: e.deltaCasiers + 1 }))} className="w-8 h-8 rounded-full bg-paper border-0 text-sm font-bold">+</button>
+                      <button onClick={() => setEditCorrection(e => e ? {...e, deltaCasiers: e.deltaCasiers + 1} : null)} className="w-8 h-8 rounded-full bg-paper border-0 text-sm font-bold">+</button>
                     </div>
                   </div>
                   <div className="flex-1">
                     <label className="block text-[10px] text-neutral mb-1">Bouteilles</label>
                     <div className="flex items-center gap-2">
-                      <button onClick={() => setEditCorrection(e => ({ ...e, deltaBouteilles: e.deltaBouteilles - 1 }))} className="w-8 h-8 rounded-full bg-paper border-0 text-sm font-bold">−</button>
+                      <button onClick={() => setEditCorrection(e => e ? {...e, deltaBouteilles: e.deltaBouteilles - 1} : null)} className="w-8 h-8 rounded-full bg-paper border-0 text-sm font-bold">−</button>
                       <span className="font-mono text-lg font-bold flex-1 text-center">{editCorrection.deltaBouteilles}</span>
-                      <button onClick={() => setEditCorrection(e => ({ ...e, deltaBouteilles: e.deltaBouteilles + 1 }))} className="w-8 h-8 rounded-full bg-paper border-0 text-sm font-bold">+</button>
+                      <button onClick={() => setEditCorrection(e => e ? {...e, deltaBouteilles: e.deltaBouteilles + 1} : null)} className="w-8 h-8 rounded-full bg-paper border-0 text-sm font-bold">+</button>
                     </div>
                   </div>
                 </div>

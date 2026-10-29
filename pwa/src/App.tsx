@@ -24,8 +24,8 @@ function App() {
         {activeTab === 'pos' && <POS />}
         {activeTab === 'tickets' && <Tickets />}
         {activeTab === 'stock' && <Stock />}
-        {activeTab === 'stockOwner' {activeTab === 'stockOwner' && <StockOwner />}{activeTab === 'stockOwner' && <StockOwner />} <StockOwner />}
-        {activeTab === 'ravit' {activeTab === 'stockOwner' && <StockOwner />}{activeTab === 'stockOwner' && <StockOwner />} <Ravitaillement />}
+        {activeTab === 'stockOwner' && <StockOwner />}
+        {activeTab === 'ravit' && <Ravitaillement />}
       </div>
 
       {/* Bottom Tab Bar */}
