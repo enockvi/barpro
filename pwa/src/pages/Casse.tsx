@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { dataService } from '../db';
 import type { Product, CasseEvent } from '@barpro/core';
 
-const MOTIFS = ['Cassée', 'Défaillante (bouchon, gaz, goût)', 'Périmée', 'Autre'] as const;
+const MOTIFS = ['Cassé', 'Gâté'] as const;
 type Motif = typeof MOTIFS[number];
 
 interface Declaration {
