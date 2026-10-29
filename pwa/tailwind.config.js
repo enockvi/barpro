@@ -1,17 +1,26 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        forest: '#0B3322',
-        'forest-deep': '#06231A',
+        forest: {
+          DEFAULT: '#0B3322',
+          deep: '#06231A',
+          900: '#06231A',
+          800: '#0B3322',
+          700: '#1F5C3F',
+          600: '#1F5C3F',
+        },
+        citron: '#8BFA5A',
         'sous-bois': '#1F5C3F',
         paper: '#F5F8F3',
-        citron: '#8BFA5A',
         alert: '#F5B841',
         error: '#FF6B5B',
         neutral: '#5E7266',
+        limeSoft: '#D9FBC8',
+        limeLight: '#EEFCE6',
       },
       fontFamily: {
         sans: ['Inter', '-apple-system', 'SF Pro Display', 'Helvetica Neue', 'Arial', 'sans-serif'],
@@ -42,5 +51,5 @@ export default {
     },
   },
   plugins: [],
-  darkMode: 'class',
 };
+
