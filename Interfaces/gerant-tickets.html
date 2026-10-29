@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Gérant — Tickets du jour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit;cursor:pointer}
+.hide{display:none!important}
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;outline:none}
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.top{padding:4px 18px 10px}
+.top h1{font-size:26px;line-height:32px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.top p{font-size:13px;color:var(--muted)}
+.search{margin:6px 18px 10px;height:46px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 18px;font-size:16px;outline:none;width:calc(100% - 36px)}
+.summary{margin:0 18px 12px;background:var(--forest);color:var(--white);border-radius:22px;padding:16px 18px;display:flex;justify-content:space-between;align-items:center}
+.summary span{font-size:13px;color:rgba(255,255,255,.75)}
+.summary b{font-family:var(--mono);font-size:22px;color:var(--lime)}
+.list{flex:1;overflow-y:auto;padding:0 18px 28px}
+.tk{width:100%;background:var(--white);border:0;border-radius:20px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;text-align:left}
+.tk .no{font-family:var(--mono);font-size:13px;color:var(--muted);width:48px;flex:none}
+.tk .mid{flex:1;min-width:0}
+.tk .mid b{display:block;font-size:14px}
+.tk .mid small{font-size:12px;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk .amt{font-family:var(--mono);font-weight:600;font-size:15px;text-align:right;white-space:nowrap}
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;margin-top:4px}
+.tag svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.t-edit{background:var(--lime-soft);color:var(--forest-deep)}
+.t-lock{background:#E8EDE9;color:var(--muted)}
+.t-sus{background:#FDF0CF;color:#7A5300}
+.t-cancel{background:#FFE1DD;color:#9A2A1E}
+.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);font-weight:700;margin:14px 2px 8px}
+/* Détail */
+.sheet{position:absolute;inset:44px 0 0 0;background:var(--paper);display:flex;flex-direction:column;z-index:10}
+.sheet-top{display:flex;align-items:center;gap:12px;padding:12px 18px}
+.sheet-top button.back{width:40px;height:40px;border-radius:50%;border:0;background:var(--white);box-shadow:var(--shadow);font-size:18px}
+.sheet-top h2{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--forest-deep)}
+.sheet-body{flex:1;overflow-y:auto;padding:0 18px 24px}
+.card{background:var(--white);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
+.lrow{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;align-items:center}
+.lrow:last-child{border:0}
+.lrow small{display:block;font-size:12px;color:var(--muted)}
+.lrow .qty{font-family:var(--mono);color:var(--muted);font-size:13px;white-space:nowrap}
+.lrow .pr{font-family:var(--mono);font-weight:600;white-space:nowrap}
+.promo{display:inline-block;font-size:11px;font-weight:700;background:var(--lime-soft);color:var(--forest-deep);padding:2px 7px;border-radius:999px;margin-left:6px}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0 4px}
+.total b{font-family:var(--mono);font-size:24px;letter-spacing:-.02em}
+.timer{border-radius:20px;padding:14px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;background:var(--lime-soft);color:var(--forest-deep)}
+.timer.lock{background:#E8EDE9;color:var(--muted)}
+.timer b{font-family:var(--mono);font-size:18px}
+.timer small{display:block;font-size:12px;opacity:.8}
+.notice{border-radius:18px;padding:14px 16px;margin-bottom:12px;font-size:14px;line-height:20px}
+.n-warn{background:#FDF0CF;color:#7A5300}
+.n-info{background:#E3EEFF;color:#1B4D9B}
+.n-err{background:#FFE1DD;color:#9A2A1E}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border-radius:999px;border:0;font-weight:700;font-size:15px;margin-top:10px}
+.btn-lime{background:var(--lime);color:var(--forest-deep)}
+.btn-forest{background:var(--forest);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--forest-deep);box-shadow:inset 0 0 0 1.5px var(--forest-deep)}
+.btn-danger{background:#FFE1DD;color:#9A2A1E}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:40px;height:40px;border-radius:50%;border:0;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);font-size:20px;font-weight:600}
+.stepper span{font-family:var(--mono);font-size:17px;min-width:28px;text-align:center}
+.hist{font-size:13px;color:var(--muted);padding:8px 0;border-bottom:1px solid var(--line)}
+.hist:last-child{border:0}
+.hist b{color:var(--ink)}
+.conf{position:absolute;inset:0;background:rgba(6,35,26,.45);display:flex;align-items:flex-end;z-index:30}
+.confcard{background:var(--paper);border-radius:28px 28px 0 0;padding:22px 20px 28px;width:100%}
+.confcard h3{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--forest-deep);margin-bottom:6px}
+.confcard p{color:var(--muted);font-size:14px;margin-bottom:12px}
+.toast{position:absolute;left:18px;right:18px;bottom:24px;background:var(--forest);color:var(--white);padding:12px 16px;border-radius:16px;font-size:14px;font-weight:600;text-align:center;z-index:40}
+.nav{flex:none;background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding:8px 4px 22px}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--muted);min-height:48px;padding-top:2px;position:relative}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--forest)}
+.tab.on::before{content:"";position:absolute;top:-8px;width:28px;height:3px;border-radius:999px;background:var(--lime)}
+.body{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label for="scenario">Scénario</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="normal">Tickets du jour (quelques modifiables)</option>
+    <option value="suspect">Ticket à heure suspecte</option>
+  </select>
+</div>
+
+<div class="phone" id="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="top"><h1>Tickets</h1><p>Journée du 29/10/2026 · 4 h à 3 h 59</p></div>
+  <input class="search" id="q" placeholder="Rechercher par montant ou produit" oninput="renderList()">
+  <div class="summary"><span>Chiffre d'affaires du jour</span><b id="ca">0 F</b></div>
+  <div class="body">
+    <div class="list" id="list"></div>
+    <div class="sheet hide" id="sheet"></div>
+    <div class="conf hide" id="conf"></div>
+    <div class="toast hide" id="toast"></div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+</div>
+
+<script>
+// ---------- Horloge de démonstration : 10 h 24 au chargement ----------
+const T0=Date.now();
+const nowDemo=()=> new Date(new Date('2026-10-29T10:24:00').getTime() + (Date.now()-T0));
+const fmtT=d=>d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}).replace(':',' h ');
+const F=n=>Math.round(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ')+' F';
+const MIN=60000;
+
+// Prix de vente
+const PRICE={castel:800,beaufort:800,benin:700,heineken:800,coca:400,fanta:400,sprite:400,ananas:400,pos50:300,pos15:500,cris50:300,cris15:500};
+const NAME={castel:'Castel 65 cl',beaufort:'Beaufort 65 cl',benin:'La Béninoise 65 cl',heineken:'Heineken 33 cl',coca:'Coca-Cola 33 cl',fanta:'Fanta 33 cl',sprite:'Sprite 33 cl',ananas:'Top Ananas 33 cl',pos50:'Possotomè 50 cl',pos15:'Possotomè 1,5 L',cris50:'Cristal 50 cl',cris15:'Cristal 1,5 L'};
+// promo 3 pour 1 000 F sur Coca-Cola et Fanta
+function lineTotal(id,q){
+  if(id==='coca'||id==='fanta'){ const g=Math.floor(q/3), r=q%3; return {total:g*1000+r*400, promo:g>0}; }
+  return {total:q*PRICE[id], promo:false};
+}
+// Tickets : minutes écoulées depuis leur création (modifiable pendant 60 min)
+let TICKETS=[];
+function buildTickets(scn){
+  const base=[
+    {no:'0214',ago:118,lines:[['castel',2],['coca',3]],suspect:false},
+    {no:'0215',ago:95,lines:[['heineken',1],['sprite',2]],suspect:false},
+    {no:'0216',ago:74,lines:[['benin',3]],suspect:false},
+    {no:'0217',ago:40,lines:[['pos50',4],['cris15',2]],suspect:false},
+    {no:'0218',ago:18,lines:[['castel',1],['fanta',4],['pos15',1]],suspect:scn==='suspect'},
+    {no:'0219',ago:6,lines:[['ananas',2]],suspect:false}
+  ];
+  return base.map(t=>{
+    const lines=t.lines.map(([id,q])=>({id,q,...lineTotal(id,q)}));
+    return {no:t.no,created:new Date(nowDemo().getTime()-t.ago*MIN),lines,total:lines.reduce((a,l)=>a+l.total,0),suspect:t.suspect,versions:[]};
+  });
+}
+let scn='normal', openNo=null, edit=null, toastT;
+
+// Modifiable pendant 1 heure après création
+const left=t=> Math.max(0, 60 - Math.floor((nowDemo()-t.created)/MIN));
+const modifiable=t=> left(t)>0 && !t.cancelled;
+
+function setScenario(v){ scn=v; TICKETS=buildTickets(v); openNo=null; edit=null; render(); }
+function render(){ renderNav(); renderList(); document.getElementById('ca').textContent=F(dayCA()); }
+function dayCA(){ return TICKETS.filter(t=>!t.cancelled).reduce((a,t)=>a+t.total,0); }
+function badge(t){
+  if(t.cancelled) return `<span class="tag t-cancel">Annulé</span>`;
+  if(t.suspect) return `<span class="tag t-sus">Heure suspecte</span>`;
+  if(modifiable(t)) return `<span class="tag t-edit">${ico('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')} Modifiable encore ${left(t)} min</span>`;
+  return `<span class="tag t-lock">${ico('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')} Verrouillé</span>`;
+}
+const ico=p=>`<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+function renderList(){
+  const q=document.getElementById('q').value.trim().toLowerCase();
+  const list=[...TICKETS].reverse().filter(t=>{
+    if(!q) return true;
+    const amt=String(t.total).replace(/\s/g,'');
+    return amt.includes(q.replace(/\s|f/gi,'')) || t.lines.some(l=>NAME[l.id].toLowerCase().includes(q));
+  });
+  document.getElementById('list').innerHTML = list.map(t=>{
+    const names=t.lines.map(l=>`${l.q} × ${NAME[l.id].split(' ')[0]}`).join(', ');
+    return `<button class="tk" onclick="openTicket('${t.no}')">
+      <span class="no">#${t.no}</span>
+      <span class="mid"><b>${fmtT(t.created)}</b><small>${names}</small>${badge(t)}</span>
+      <span class="amt${t.cancelled?' ' : ''}" style="${t.cancelled?'text-decoration:line-through;color:var(--muted)':''}">${F(t.total)}</span>
+    </button>`;
+  }).join('') || '<div style="text-align:center;color:var(--muted);padding:32px">Aucun ticket trouvé.</div>';
+  document.getElementById('ca').textContent=F(dayCA());
+}
+
+// ---------- Détail ----------
+function openTicket(no){ openNo=no; edit=null; renderSheet(); }
+function closeSheet(){ openNo=null; edit=null; document.getElementById('sheet').classList.add('hide'); render(); }
+function renderSheet(){
+  const t=TICKETS.find(x=>x.no===openNo); if(!t) return;
+  const mod=modifiable(t);
+  const sh=document.getElementById('sheet');
+  sh.classList.remove('hide');
+  const timer = t.cancelled ? '' : mod
+    ? `<div class="timer"><div><b>${left(t)} min</b><small>restantes pour modifier</small></div>${ico('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')}</div>`
+    : `<div class="timer lock"><div><b>Verrouillé</b><small>1 heure écoulée</small></div>${ico('<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>')}</div>`;
+  const lines = t.lines.map(l=>`<div class="lrow"><div>${NAME[l.id]}${l.promo?'<span class="promo">Promo appliquée</span>':''}<small>${F(PRICE[l.id])} à la bouteille</small></div><span class="qty">× ${l.q}</span><span class="pr">${F(l.total)}</span></div>`).join('');
+  const hist = t.versions.length ? t.versions.map(v=>`<div class="hist"><b>Version ${v.n}</b> · ${v.at} · ${v.what}</div>`).join('') : '<div class="hist">Aucune modification.</div>';
+  const actions = t.cancelled ? '' : mod ? `<button class="btn btn-lime" onclick="startEdit('${t.no}')">Modifier le ticket</button><button class="btn btn-danger" onclick="askCancel('${t.no}')">Annuler le ticket</button>` : '';
+  const lockNote = !t.cancelled && !mod ? `<div class="notice n-warn">Ce ticket ne peut plus être modifié. Une erreur se constate à l'inventaire.</div>` : '';
+  const suspect = t.suspect ? `<div class="notice n-warn">Heure suspecte : l'horloge de cet appareil semble avoir reculé. Signalez-le au propriétaire si besoin.</div>` : '';
+  const perProd = dayTotals();
+  sh.innerHTML = `
+    <div class="sheet-top"><button class="back" onclick="closeSheet()" aria-label="Retour">‹</button><h2>Ticket #${t.no}</h2></div>
+    <div class="sheet-body">
+      <div style="margin:0 0 10px;font-size:13px;color:var(--muted)">${fmtT(t.created)} · Rachelle · Android · Chrome</div>
+      ${timer}${suspect}${lockNote}
+      <div class="card" style="padding:4px 16px">${lines}
+        <div class="total"><span>Total</span><b>${F(t.total)}</b></div>
+      </div>
+      ${actions}
+      <div class="sec">Historique des versions</div>
+      <div class="card" style="padding:6px 14px">${hist}</div>
+      <div class="sec">Ventes du jour par boisson</div>
+      <div class="card" style="padding:4px 16px">${perProd.map(([n,q])=>`<div class="lrow"><span>${n}</span><span class="qty">${q} b.</span></div>`).join('')}</div>
+    </div>`;
+  if(edit) renderEdit(t);
+}
+function dayTotals(){
+  const m={}; TICKETS.filter(t=>!t.cancelled).forEach(t=>t.lines.forEach(l=>{ m[l.id]=(m[l.id]||0)+l.q; }));
+  return Object.entries(m).map(([id,q])=>[NAME[id],q]);
+}
+
+// ---------- Modification : nouvelle version, ancienne conservée ----------
+function startEdit(no){
+  const t=TICKETS.find(x=>x.no===no);
+  edit={no, lines:t.lines.map(l=>({...l})), removed:[]};
+  renderEdit(t);
+}
+function renderEdit(t){
+  const sh=document.getElementById('sheet');
+  const rows=edit.lines.map((l,i)=>`<div class="lrow"><div>${NAME[l.id]}<small>${F(PRICE[l.id])} à la bouteille</small></div>
+     <div class="stepper"><button onclick="chg(${i},-1)" aria-label="Moins">−</button><span>${l.q}</span><button onclick="chg(${i},1)" aria-label="Plus">+</button></div></div>`).join('');
+  const total = edit.lines.filter(l=>l.q>0).reduce((a,l)=>a+lineTotal(l.id,l.q).total,0);
+  const box=document.createElement('div');
+  box.className='conf';
+  box.innerHTML=`<div class="confcard"><h3>Modifier le ticket #${t.no}</h3><p>Chaque modification crée une nouvelle version. L'ancienne est conservée.</p>
+    <div class="card" style="padding:4px 14px;margin-bottom:8px">${rows}</div>
+    <div class="total" style="padding:4px 2px 10px"><span>Nouveau total</span><b>${F(total)}</b></div>
+    <button class="btn btn-lime" onclick="saveEdit()">Enregistrer la version</button>
+    <button class="btn btn-danger" onclick="askCancel('${t.no}', true)">Annuler tout le ticket</button>
+    <button class="btn btn-ghost" onclick="cancelEdit()">Retour sans changer</button></div>`;
+  sh.appendChild(box);
+}
+function chg(i,d){ const l=edit.lines[i]; l.q=Math.max(0,l.q+d); const t=TICKETS.find(x=>x.no===edit.no); const box=document.querySelector('#sheet .conf'); if(box) box.remove(); renderEdit(t); }
+function cancelEdit(){ edit=null; const b=document.querySelector('#sheet .conf'); if(b) b.remove(); }
+function saveEdit(){
+  const t=TICKETS.find(x=>x.no===edit.no);
+  const newLines=edit.lines.filter(l=>l.q>0).map(l=>({...l,...lineTotal(l.id,l.q)}));
+  const changes=[];
+  t.lines.forEach(o=>{ const n=newLines.find(x=>x.id===o.id); const nq=n?n.q:0; if(nq!==o.q) changes.push(`${NAME[o.id]} ${o.q}→${nq}`); });
+  newLines.forEach(n=>{ if(!t.lines.some(o=>o.id===n.id)) changes.push(`${NAME[n.id]} ajouté`); });
+  if(!changes.length){ cancelEdit(); renderSheet(); return; }
+  t.versions.push({n:t.versions.length+1,at:fmtT(nowDemo()),what:changes.join(', ')});
+  t.lines=newLines; t.total=newLines.reduce((a,l)=>a+l.total,0);
+  cancelEdit(); toast('Version enregistrée. Stock recalculé.'); renderSheet(); render();
+}
+function askCancel(no, fromEdit){
+  const t=TICKETS.find(x=>x.no===no);
+  const sh=document.getElementById('sheet');
+  const box=document.createElement('div'); box.className='conf';
+  box.innerHTML=`<div class="confcard"><h3>Annuler le ticket #${t.no} ?</h3><p>Le ticket de ${F(t.total)} sera marqué annulé. Le stock est remis à jour. Cette action est définitive : vous ne pourrez pas la défaire.</p>
+    <button class="btn btn-danger" onclick="doCancel('${t.no}')">Confirmer l'annulation</button>
+    <button class="btn btn-ghost" onclick="this.closest('.conf').remove()">Garder le ticket</button></div>`;
+  sh.appendChild(box);
+}
+function doCancel(no){
+  const t=TICKETS.find(x=>x.no===no); t.cancelled=true; t.versions.push({n:t.versions.length+1,at:fmtT(nowDemo()),what:'Ticket annulé'});
+  edit=null; toast('Ticket annulé. Stock remis à jour.'); renderSheet(); render();
+}
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.remove('hide'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.add('hide'),2400); }
+
+// ---------- Navigation ----------
+const NAVI=[['Vente','M6 3h12v18l-3-2-3 2-3-2-3 2z'],['Stock','M3 4h18v5H3zM5 9v10h14V9'],['Pénurie','M12 8v5M12 17h.01M10 3h4l8 17H2z'],['Ravitaill.','M3 7h13v10H3zM16 10h3l2 3v4h-5'],['Inventaire','M9 5h10M9 12h10M9 19h10'],['Stats','M4 20V10M10 20V4M16 20v-7M22 20H2']];
+function renderNav(){ document.getElementById('nav').innerHTML=NAVI.map(([l,d],i)=>`<button class="tab ${i===0?'on':''}" onclick="toast('${l} : écran du fichier suivant')"><svg viewBox="0 0 24 24"><path d="${d}"/></svg>${l}</button>`).join(''); }
+
+TICKETS=buildTickets('normal');
+render();
+setInterval(()=>{ if(openNo) renderSheet(); renderList(); },30000);
+</script>
+</body>
+</html>

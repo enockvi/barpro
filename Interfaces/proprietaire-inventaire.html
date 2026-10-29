@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Propriétaire — Inventaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit;cursor:pointer}
+input{cursor:text}
+.hide{display:none!important}
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;outline:none}
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.head{padding:4px 20px 0}
+.head h1{font-size:28px;line-height:34px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.head p{color:var(--muted);font-size:13px;margin-top:2px}
+.subtabs{display:flex;background:var(--white);border-radius:999px;padding:4px;box-shadow:var(--shadow);margin:14px 20px 0}
+.subtabs button{flex:1;height:38px;border:0;background:none;border-radius:999px;font-weight:600;font-size:13px;color:var(--muted)}
+.subtabs button.on{background:var(--forest);color:var(--lime)}
+.content{flex:1;overflow-y:auto;padding:14px 20px 24px}
+.card{background:var(--white);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
+.card b{display:block;font-size:16px;margin-bottom:4px}
+.card p{color:var(--muted);font-size:14px;line-height:20px}
+.notice{border-radius:18px;padding:14px 16px;margin-bottom:12px;font-size:14px;line-height:20px;display:flex;gap:10px;align-items:flex-start}
+.notice svg{width:20px;height:20px;flex:none;margin-top:1px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.n-warn{background:#FDF0CF;color:#7A5300}
+.n-err{background:#FFE1DD;color:#9A2A1E}
+.n-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.n-info{background:#E3EEFF;color:#1B4D9B}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:0 20px;border-radius:999px;border:0;font-weight:600;font-size:16px;margin-top:10px}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--lime);color:var(--forest-deep)}
+.btn-dark{background:var(--forest);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--forest-deep);box-shadow:inset 0 0 0 1.5px var(--forest-deep)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-sm{min-height:40px;font-size:14px;width:auto;padding:0 16px;margin:0}
+.mono{font-family:var(--mono)}
+.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);font-weight:700;margin:18px 0 8px}
+/* Comptage */
+.count{background:var(--white);border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center}
+.photo{width:52px;height:52px;border-radius:16px;display:grid;place-items:center}
+.photo svg{width:24px;height:24px;stroke:var(--forest-deep);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.count .nm{font-weight:700;font-size:15px}
+.count .fmt{font-size:12px;color:var(--muted)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.fields label{font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px;letter-spacing:.04em}
+.fields input{width:100%;height:46px;border-radius:14px;border:0;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);font-family:var(--mono);font-size:17px;text-align:center;outline:none}
+.fields input:focus{box-shadow:inset 0 0 0 2px var(--mid),0 0 0 4px rgba(139,250,90,.35)}
+.fields input.bad{box-shadow:inset 0 0 0 2px var(--coral)}
+.okmark{font-size:12px;font-weight:700;color:var(--forest-deep);background:var(--lime-soft);padding:3px 8px;border-radius:999px;margin-left:6px}
+.progress{position:sticky;top:0;background:var(--paper);padding:6px 0 10px;z-index:2}
+.bar{height:8px;background:var(--white);border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
+.bar div{height:100%;background:var(--lime);border-radius:999px;transition:width .3s}
+.progress small{display:block;font-size:12px;color:var(--muted);margin-top:6px}
+/* Rapports */
+.tbl{width:100%;border-collapse:collapse;background:var(--white);border-radius:18px;overflow:hidden;box-shadow:var(--shadow);font-size:12px}
+.tbl th{text-align:right;font-size:10px;color:var(--muted);font-weight:700;letter-spacing:.04em;padding:10px 6px;border-bottom:1px solid var(--line);text-transform:uppercase}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl td{padding:9px 6px;border-bottom:1px solid var(--line);text-align:right;font-family:var(--mono)}
+.tbl td:first-child{font-family:var(--font);font-weight:600;font-size:12px}
+.tbl tr:last-child td{border:0}
+.tbl tr.gap-m td{background:#FFE1DD}
+.tbl tr.gap-p td{background:#FDF0CF}
+.tbl .gap{font-weight:700}
+.g-m{color:#9A2A1E}
+.g-p{color:#7A5300}
+.scroll{overflow-x:auto;margin:0 -20px;padding:0 20px}
+.kv{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;gap:12px}
+.kv:last-child{border:0}
+.kv span{color:var(--muted)}
+.kv b{font-family:var(--mono);text-align:right}
+.msg{background:var(--forest);color:var(--white);border-radius:20px;padding:18px;font-size:15px;line-height:23px}
+.audio{display:flex;gap:8px;margin-top:12px}
+.audio button{flex:1;height:44px;border-radius:999px;border:0;background:var(--lime);color:var(--forest-deep);font-weight:700;font-size:14px}
+.audio button.ghost{background:rgba(255,255,255,.12);color:var(--white)}
+.pdf-name{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:8px;word-break:break-all}
+.hist{background:var(--white);border-radius:18px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.hist b{display:block;font-size:14px}
+.hist small{font-size:12px;color:var(--muted)}
+.chip{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;margin-top:4px;display:inline-block}
+.c-warn{background:#FDF0CF;color:#7A5300}
+.c-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.nav{flex:none;background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 22px;position:relative}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--muted);min-height:48px;padding-top:2px;position:relative}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--forest)}
+.tab.on::before{content:"";position:absolute;top:-8px;width:28px;height:3px;border-radius:999px;background:var(--lime)}
+.toast{position:absolute;left:20px;right:20px;bottom:96px;background:var(--forest);color:var(--white);padding:12px 16px;border-radius:16px;font-size:14px;font-weight:600;text-align:center;z-index:30}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label for="scenario">Scénario de démonstration</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="ecart">Inventaire avec écarts (2 bouteilles)</option>
+    <option value="coherence">Inventaire sans écart (alerte cohérence)</option>
+    <option value="premier">Premier inventaire (stock de départ)</option>
+  </select>
+</div>
+
+<div class="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="head"><h1>Inventaire</h1><p id="headSub">Comptage en aveugle</p></div>
+  <div class="subtabs" id="subtabs"></div>
+  <div class="content" id="content"></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="toast hide" id="toast"></div>
+</div>
+
+<script>
+// ---------- Données (bouteilles). théorique = dernier inventaire + ravitaillé − vendu − cassé ----------
+const BAR='Chez Mama Africa';
+const P=[
+ {id:'castel',name:'Castel 65 cl',fmt:'65 cl · 12 par casier',bpc:12,buy:700,tile:'#FCE7B0',last:29,ach:36,vendu:31,casse:2,theo:32},
+ {id:'beaufort',name:'Beaufort 65 cl',fmt:'65 cl · 12 par casier',bpc:12,buy:675,tile:'#E8D3B5',last:12,ach:12,vendu:24,casse:0,theo:0},
+ {id:'benin',name:'La Béninoise 65 cl',fmt:'65 cl · 12 par casier',bpc:12,buy:650,tile:'#F7D9C4',last:12,ach:12,vendu:15,casse:0,theo:9},
+ {id:'heineken',name:'Heineken 33 cl',fmt:'33 cl · 24 par casier',bpc:24,buy:600,tile:'#CDEBD0',last:24,ach:24,vendu:20,casse:0,theo:28},
+ {id:'coca',name:'Coca-Cola 33 cl',fmt:'33 cl · 24 par casier',bpc:24,buy:240,tile:'#F9C9C0',last:74,ach:48,vendu:48,casse:0,theo:74},
+ {id:'fanta',name:'Fanta 33 cl',fmt:'33 cl · 24 par casier',bpc:24,buy:240,tile:'#FFD9A8',last:24,ach:24,vendu:30,casse:0,theo:18},
+ {id:'sprite',name:'Sprite 33 cl',fmt:'33 cl · 24 par casier',bpc:24,buy:240,tile:'#D5F0C8',last:48,ach:24,vendu:24,casse:0,theo:48},
+ {id:'ananas',name:'Top Ananas 33 cl',fmt:'33 cl · 24 par casier',bpc:24,buy:230,tile:'#FCEBB0',last:36,ach:0,vendu:6,casse:0,theo:30},
+ {id:'pos50',name:'Possotomè 50 cl',fmt:'50 cl · 12 par casier',bpc:12,buy:200,tile:'#D3E8F7',last:36,ach:24,vendu:24,casse:0,theo:36},
+ {id:'pos15',name:'Possotomè 1,5 L',fmt:'1,5 L · 6 par casier',bpc:6,buy:300,tile:'#CFE6F5',last:9,ach:12,vendu:12,casse:0,theo:9},
+ {id:'cris50',name:'Cristal 50 cl',fmt:'50 cl · 12 par casier',bpc:12,buy:200,tile:'#DDEEF9',last:24,ach:24,vendu:24,casse:0,theo:24},
+ {id:'cris15',name:'Cristal 1,5 L',fmt:'1,5 L · 6 par casier',bpc:6,buy:300,tile:'#C8E2F4',last:12,ach:18,vendu:18,casse:0,theo:12}
+];
+const CAS={castel:2};         // casse depuis le dernier inventaire (valeur = perte de la buvette)
+const SALES_CA=248000;        // chiffre d'affaires du jour (provisoire)
+const HIST=[
+ {d:'21/10/2026 · 20 h 45',who:'Rachelle',miss:1,pdf:'Inventaire_ChezMamaAfrica_2026-10-21_2045.pdf'},
+ {d:'14/10/2026 · 21 h 05',who:'M. Adjovi',miss:0,pdf:'Inventaire_ChezMamaAfrica_2026-10-14_2105.pdf'}
+];
+let sc='ecart', sub='inv', countState={}, validated=null, audio=null;
+const ICO={box:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>',
+ warn:'<path d="M12 8v5M12 17h.01"/><path d="M10.3 3.9L2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+ ok:'<path d="M5 12l5 5L20 7"/>', info:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>', inv:'<path d="M9 5h10M9 12h10M9 19h10"/><path d="M4 5l1 1 2-2M4 12l1 1 2-2M4 19l1 1 2-2"/>',
+ rep:'<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h6M9 16h6"/>', hist:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+ home:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>', ventes:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
+ stock:'<rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9M9 13h6"/>', plus:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>'};
+const ico=(p,w=20)=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const F=n=>Math.round(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ')+' F';
+const toast=m=>{const t=document.getElementById('toast');t.textContent=m;t.classList.remove('hide');clearTimeout(window.__t);window.__t=setTimeout(()=>t.classList.add('hide'),2400);};
+
+// Comptage simulé : écarts selon le scénario
+function countedFor(p){
+  if(sc==='coherence') return p.theo;
+  if(sc==='premier') return p.theo;
+  if(p.id==='castel') return p.theo-2;   // 2 bouteilles manquantes
+  if(p.id==='fanta')  return p.theo+2;   // 2 bouteilles en surplus
+  return p.theo;
+}
+const gapOf=p=> (countState[p.id]!==undefined ? countState[p.id] : p.theo) - p.theo;
+
+// ---------- Navigation ----------
+const NAV=[{l:'Accueil',i:'home'},{l:'Ventes',i:'ventes'},{l:'Stock',i:'stock'},{l:'Inventaire',i:'inv',on:true},{l:'Plus',i:'plus'}];
+function renderNav(){ document.getElementById('nav').innerHTML=NAV.map(t=>`<button class="tab ${t.on?'on':''}" onclick="toast('${t.l} : écran du fichier suivant')">${ico(ICO[t.i],24)}${t.l}</button>`).join(''); }
+const SUB=[{id:'inv',label:'Inventaire'},{id:'rep',label:'Rapports'},{id:'hist',label:'Historique'}];
+function renderSub(){ document.getElementById('subtabs').innerHTML=SUB.map(s=>`<button class="${sub===s.id?'on':''}" onclick="setSub('${s.id}')">${s.label}</button>`).join(''); }
+function setSub(s){ sub=s; render(); }
+function setScenario(v){ sc=v; countState={}; validated=null; sub='inv'; render(); }
+
+function render(){
+  renderNav(); renderSub();
+  const c=document.getElementById('content');
+  const subs={inv:'Comptage en aveugle',rep:'Dernier inventaire validé',hist:'Inventaires passés'};
+  document.getElementById('headSub').textContent=subs[sub];
+  if(sub==='inv'){
+    if(validated==='recap') c.innerHTML=recapView();
+    else if(validated) c.innerHTML=`<div class="notice n-ok">${ico(ICO.ok,20)}<span><b>Inventaire validé à ${validated.at}.</b> Consultez les rapports.</span></div><button class="btn btn-dark" onclick="setSub('rep')">Voir les rapports</button><button class="btn btn-ghost" onclick="startNew()">Nouvel inventaire</button>`;
+    else c.innerHTML=countView();
+  }
+  if(sub==='rep') c.innerHTML = reportView();
+  if(sub==='hist') c.innerHTML = histView();
+}
+
+// ---------- 1. Comptage en aveugle ----------
+function countView(){
+  const total=P.length;
+  const done=P.filter(p=>countState[p.id]!==undefined).length;
+  const pct=Math.round(done/total*100);
+  const rows=P.map(p=>{
+    const v=countState[p.id];
+    const cs = v===undefined? '' : Math.floor(v/p.bpc), bs = v===undefined? '' : v%p.bpc;
+    return `<div class="count">
+      <span class="photo" style="background:${p.tile}">${ico(ICO.box,24)}</span>
+      <div><div class="nm">${p.name}${v!==undefined?'<span class="okmark">Compté</span>':''}</div><div class="fmt">${p.fmt}</div>
+        <div class="fields">
+          <div><label for="c-${p.id}">CASIERS</label><input id="c-${p.id}" type="number" min="0" inputmode="numeric" value="${v!==undefined?cs:''}" onchange="setCount('${p.id}')"></div>
+          <div><label for="b-${p.id}">BOUTEILLES</label><input id="b-${p.id}" type="number" min="0" inputmode="numeric" value="${v!==undefined?bs:''}" onchange="setCount('${p.id}')"></div>
+        </div></div></div>`;
+  }).join('');
+  const canVal = done===total;
+  return `
+    <div class="progress"><div class="bar"><div style="width:${pct}%"></div></div><small>${done} sur ${total} boissons comptées. Chaque boisson doit être renseignée, 0 compris.</small></div>
+    <div class="notice n-info">${ico(ICO.info,20)}<span>Le stock théorique n'est pas affiché. Comptez ce qui est réellement dans les réfrigérateurs.</span></div>
+    ${rows}
+    <button class="btn btn-primary" ${canVal?'':'disabled'} onclick="openRecap()">Voir le récapitulatif</button>
+    <button class="btn btn-ghost" onclick="toast('Brouillon enregistré')">Enregistrer le brouillon</button>
+    <button class="btn btn-ghost" onclick="demoFill()">Remplir selon le scénario (démo)</button>`;
+}
+function setCount(id){
+  const cs=+document.getElementById('c-'+id).value, bs=+document.getElementById('b-'+id).value;
+  const p=P.find(x=>x.id===id);
+  const cOk = document.getElementById('c-'+id).value!=='' && document.getElementById('b-'+id).value!=='';
+  if(cOk){ countState[id]=cs*p.bpc+bs; }
+  else { delete countState[id]; }
+  render();
+  // garder le focus si l'utilisateur tape encore
+}
+function demoFill(){ P.forEach(p=>countState[p.id]=countedFor(p)); render(); toast('Comptage de démonstration rempli'); }
+function startNew(){ validated=null; countState={}; sub='inv'; render(); }
+function openRecap(){
+  // Récapitulatif : quantités comptées seulement, sans écart ni stock théorique
+  sub='inv'; validated='recap'; render();
+}
+function recapView(){
+  if(validated==='recap'){
+    const lines=P.map(p=>`<div class="kv"><span>${p.name}</span><b>${casRes(countState[p.id],p.bpc)}</b></div>`).join('');
+    return `<div class="card"><b>Récapitulatif</b><p>Vérifiez les quantités comptées. Une fois validé, l'inventaire est définitif.</p></div>
+      <div class="card" style="padding:4px 16px">${lines}</div>
+      <button class="btn btn-dark" onclick="confirmValidate()">Valider définitivement</button>
+      <button class="btn btn-ghost" onclick="validated=null;render()">Modifier le comptage</button>`;
+  }
+  return '';
+}
+function casRes(n,bpc){ const c=Math.floor(n/bpc), b=n%bpc; return c+' casier'+(c>1?'s':'')+' + '+b+' b.'; }
+function confirmValidate(){
+  if(!confirm('Valider définitivement cet inventaire ? Il ne pourra plus être modifié.')) return;
+  // Rapports et message
+  validated={at:'29/10/2026 · 14 h 10', pct:pctNoGap(), rapport:true};
+  toast('Inventaire enregistré');
+  sub='rep'; render();
+}
+function pctNoGap(){ const n=P.filter(p=>(countState[p.id]??p.theo)===p.theo).length; return Math.round(n/P.length*100); }
+
+// ---------- 2. Rapports ----------
+function reportView(){
+  if(!validated || validated==='recap') return `<div class="notice n-info">${ico(ICO.info,20)}<span>Aucun inventaire validé pour le moment. Lancez un comptage depuis l'onglet Inventaire.</span></div>`;
+  const first = sc==='premier';
+  if(first) return `<div class="notice n-ok">${ico(ICO.ok,20)}<span><b>Stock de départ enregistré.</b> Il n'y a pas d'inventaire précédent : aucun écart n'est calculé.</span></div>`+
+    `<div class="card"><b>Stock de départ</b><p>Les quantités comptées deviennent le stock de référence.</p></div>` + messageBlock();
+  const alertCoh = pctNoGap()>90;
+  const rows=P.map(p=>{
+    const cnt=countState[p.id]??p.theo; const gap=cnt-p.theo;
+    const cls = gap<0? 'gap-m': gap>0? 'gap-p':'';
+    const gapTxt = gap===0? '0' : (gap>0? '+'+gap : String(gap));
+    return `<tr class="${cls}"><td>${p.name.replace(' 65 cl','').replace(' 33 cl','').replace(' 50 cl','').replace(' 1,5 L','')}</td><td>${p.last}</td><td>${p.ach}</td><td>${p.vendu}</td><td>${p.casse}</td><td>${p.theo}</td><td>${cnt}</td><td class="gap ${gap<0?'g-m':gap>0?'g-p':''}">${gapTxt}</td></tr>`;
+  }).join('');
+  const miss=P.filter(p=>(countState[p.id]??p.theo)<p.theo), sur=P.filter(p=>(countState[p.id]??p.theo)>p.theo);
+  const syn = `<div class="card">
+     <b>Synthèse</b>
+     ${miss.length? miss.map(p=>`<div class="kv"><span>Manquant</span><b class="g-m">${p.name} : ${p.theo-(countState[p.id]??p.theo)} b.</b></div>`).join(''):'<div class="kv"><span>Manquants</span><b>Aucun</b></div>'}
+     ${sur.length? sur.map(p=>`<div class="kv"><span>Surplus</span><b class="g-p">${p.name} : +${(countState[p.id]??p.theo)-p.theo} b.</b></div>`).join(''):'<div class="kv"><span>Surplus</span><b>Aucun</b></div>'}
+   </div>`;
+  const coh = alertCoh ? `<div class="notice n-warn">${ico(ICO.warn,20)}<span><b>Alerte de cohérence.</b> Plus de 90 % des lignes n'ont aucun écart. Vérifiez que le comptage a bien été fait.</span></div>` : '';
+  const cassNote = `<div class="notice n-err">${ico(ICO.warn,20)}<span>Casse inhabituelle : Castel 65 cl, 2 bouteilles cette période.</span></div>`;
+  return `${coh}
+   <div class="sec">Rapport 1 · Inventaire en bouteilles</div>
+   <div class="scroll"><table class="tbl"><thead><tr><th>Boisson</th><th>Dernier inv.</th><th>Ravit.</th><th>Vendu</th><th>Cassé</th><th>Théo.</th><th>Compté</th><th>Écart</th></tr></thead><tbody>${rows}</tbody></table></div>
+   ${syn}${cassNote}
+   <div class="sec">Rapport 2 · Inventaire financier</div>
+   ${financial(miss,sur)}
+   ${messageBlock()}`;
+}
+function financial(miss,sur){
+  const valMiss = miss.reduce((a,p)=>a+(p.theo-(countState[p.id]??p.theo))*p.buy,0);
+  const valSur  = sur.reduce((a,p)=>a+((countState[p.id]??p.theo)-p.theo)*p.buy,0);
+  const valCasse= P.reduce((a,p)=>a+(CAS[p.id]||0)*p.buy,0);
+  return `<div class="card">
+     <div class="kv"><span>Chiffre d'affaires enregistré</span><b>${F(SALES_CA)}</b></div>
+     <div class="kv"><span>Valeur des manquants</span><b class="g-m">${F(valMiss)}</b></div>
+     <div class="kv"><span>Casse et défaillant (perte de la buvette)</span><b class="g-m">${F(valCasse)}</b></div>
+     <div class="kv"><span>Valeur des surplus (information)</span><b class="g-p">${F(valSur)}</b></div>
+   </div>
+   <div class="notice n-info">${ico(ICO.info,20)}<span>Ce rapport ne contient aucune somme à verser et aucun bénéfice après casse.</span></div>`;
+}
+// Message final généré : variantes avec ou sans écart
+function messageText(){
+  const miss=P.filter(p=>(countState[p.id]??p.theo)<p.theo), sur=P.filter(p=>(countState[p.id]??p.theo)>p.theo);
+  const head=`Inventaire du 29/10/2026 réalisé par Rachelle.`;
+  if(!miss.length && !sur.length) return `${head} Aucun écart. Le stock est conforme.`;
+  const m = miss.length? ' Manquants : '+miss.map(p=>`${p.theo-(countState[p.id]??p.theo)} ${p.name.split(' ')[0]}`).join(', ')+'.' : '';
+  const s = sur.length? ' Surplus : '+sur.map(p=>`+${(countState[p.id]??p.theo)-p.theo} ${p.name.split(' ')[0]}`).join(', ')+'.' : '';
+  return head+m+s;
+}
+function messageBlock(){
+  const text=messageText();
+  return `<div class="sec">Message final</div>
+    <div class="msg" id="msgText">${text}<br><br><span style="opacity:.8">Après cet inventaire réalisé par Rachelle, les boissons comptées deviennent le nouveau stock disponible dans les réfrigérateurs.</span></div>
+    <div class="audio"><button onclick="speak()">Écouter</button><button class="ghost" onclick="pauseAudio()">Pause</button><button class="ghost" onclick="speak()">Réécouter</button></div>
+    <button class="btn btn-dark" onclick="downloadPdf()">Télécharger le rapport en PDF</button>
+    <div class="pdf-name">Inventaire_ChezMamaAfrica_2026-10-29_1410.pdf</div>`;
+}
+function speak(){
+  if(!('speechSynthesis' in window)){ toast('Synthèse vocale non disponible'); return; }
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(document.getElementById('msgText').innerText);
+  u.lang='fr-FR'; u.rate=0.95; speechSynthesis.speak(u);
+}
+function pauseAudio(){ if('speechSynthesis' in window){ speechSynthesis.pause(); } }
+function downloadPdf(){ toast('PDF prêt : Inventaire_ChezMamaAfrica_2026-10-29_1410.pdf'); }
+
+// ---------- 3. Historique ----------
+function histView(){
+  const cur = validated && validated!=='recap' ? `<div class="hist"><div><b>29/10/2026 · 14 h 10</b><small>Réalisé par M. Adjovi</small><br><span class="chip c-warn">Inventaire à consulter</span></div><span class="mono" style="font-size:13px">${miss()} manquant(s)</span></div>` : '';
+  return cur + HIST.map(h=>`<div class="hist"><div><b>${h.d}</b><small>${h.who} · ${h.miss} manquant(s)</small></div><button class="btn btn-ghost btn-sm" onclick="toast('PDF : ${h.pdf}')">PDF</button></div>`).join('');
+  function miss(){ return P.filter(p=>(countState[p.id]??p.theo)<p.theo).length; }
+}
+
+// Démarrage
+render();
+</script>
+</body>
+</html>

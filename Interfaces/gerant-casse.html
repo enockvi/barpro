@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Gérant — Déclarer une casse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit;cursor:pointer}
+input,textarea{cursor:text}
+.hide{display:none!important}
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;outline:none}
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.top{display:flex;align-items:center;gap:10px;padding:4px 18px 10px}
+.top button.back{width:40px;height:40px;border-radius:50%;border:0;background:var(--white);box-shadow:var(--shadow);font-size:18px;flex:none;display:grid;place-items:center}
+.top h1{font-size:24px;line-height:30px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.scroll{flex:1;overflow-y:auto;padding:0 18px 24px}
+.note{background:#E3EEFF;color:#1B4D9B;border-radius:18px;padding:14px 16px;font-size:14px;line-height:20px;margin-bottom:14px}
+.search{width:100%;height:48px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 18px;font-size:16px;outline:none;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{background:var(--white);border:0;border-radius:20px;padding:0;overflow:hidden;box-shadow:var(--shadow);text-align:left}
+.tile.sel{box-shadow:0 0 0 2.5px var(--forest),var(--shadow)}
+.tile .img{height:64px;display:grid;place-items:center}
+.tile .img svg{width:28px;height:28px;stroke:var(--forest-deep);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tile .t{padding:9px 12px 11px}
+.tile .n{font-weight:700;font-size:13px;line-height:17px}
+.tile .s{font-size:11px;color:var(--muted)}
+.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);font-weight:700;margin:16px 2px 8px}
+.card{background:var(--white);border-radius:20px;box-shadow:var(--shadow);padding:14px 16px;margin-bottom:12px}
+.stepper{display:flex;align-items:center;gap:12px}
+.stepper button{width:46px;height:46px;border-radius:50%;border:0;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);font-size:22px;font-weight:600}
+.stepper .v{font-family:var(--mono);font-size:24px;min-width:56px;text-align:center}
+.motifs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.motif{height:52px;border-radius:16px;border:0;background:var(--white);box-shadow:inset 0 0 0 1px var(--line);font-weight:600;font-size:14px;text-align:left;padding:0 14px}
+.motif.on{background:var(--forest);color:var(--lime);box-shadow:none}
+.textin{width:100%;min-height:64px;border-radius:14px;border:0;background:var(--white);box-shadow:inset 0 0 0 1px var(--line);padding:12px 14px;font-size:15px;outline:none;resize:none;font-family:var(--font)}
+.photo{display:inline-flex;align-items:center;height:44px;padding:0 16px;border-radius:999px;background:var(--white);box-shadow:inset 0 0 0 1.5px var(--forest-deep);font-weight:600;font-size:13px;cursor:pointer}
+.photo input{display:none}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:999px;border:0;font-weight:700;font-size:15px;margin-top:12px}
+.btn-danger{background:var(--forest);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--forest-deep);box-shadow:inset 0 0 0 1.5px var(--forest-deep)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.line{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px}
+.line:last-child{border:0}
+.line small{display:block;font-size:12px;color:var(--muted)}
+.line b{font-family:var(--mono);white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:18px;font-size:14px}
+.conf{position:absolute;inset:0;background:rgba(6,35,26,.45);display:flex;align-items:flex-end;z-index:20}
+.confcard{background:var(--paper);border-radius:28px 28px 0 0;padding:22px 20px 28px;width:100%}
+.confcard h3{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--forest-deep);margin-bottom:6px}
+.confcard p{color:var(--muted);font-size:14px;margin-bottom:10px}
+.toast{position:absolute;left:18px;right:18px;bottom:96px;background:var(--forest);color:var(--white);padding:12px 16px;border-radius:16px;font-size:14px;font-weight:600;text-align:center;z-index:40}
+.nav{flex:none;background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding:8px 4px 22px}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--muted);min-height:48px;padding-top:2px;position:relative}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--forest)}
+.tab.on::before{content:"";position:absolute;top:-8px;width:28px;height:3px;border-radius:999px;background:var(--lime)}
+.body{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label for="scenario">Scénario</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="normal">Déclaration vide</option>
+    <option value="liste">Casses déclarées depuis le dernier inventaire</option>
+  </select>
+</div>
+
+<div class="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="top"><button class="back" onclick="toast('Retour : écran précédent')" aria-label="Retour">‹</button><h1>Déclarer une casse</h1></div>
+  <div class="body">
+    <div class="scroll" id="pane"></div>
+    <div class="conf hide" id="conf"></div>
+    <div class="toast hide" id="toast"></div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+</div>
+
+<script>
+// Casse : quantités et motifs uniquement, jamais de montant en francs
+const P=[
+ {id:'castel',name:'Castel 65 cl',bpc:12,tile:'#FCE7B0',stock:32},
+ {id:'beaufort',name:'Beaufort 65 cl',bpc:12,tile:'#E8D3B5',stock:0},
+ {id:'benin',name:'La Béninoise 65 cl',bpc:12,tile:'#F7D9C4',stock:9},
+ {id:'heineken',name:'Heineken 33 cl',bpc:24,tile:'#CDEBD0',stock:28},
+ {id:'coca',name:'Coca-Cola 33 cl',bpc:24,tile:'#F9C9C0',stock:74},
+ {id:'fanta',name:'Fanta 33 cl',bpc:24,tile:'#FFD9A8',stock:18},
+ {id:'sprite',name:'Sprite 33 cl',bpc:24,tile:'#D5F0C8',stock:48},
+ {id:'pos50',name:'Possotomè 50 cl',bpc:12,tile:'#D3E8F7',stock:36},
+ {id:'cris15',name:'Cristal 1,5 L',bpc:6,tile:'#C8E2F4',stock:12}
+];
+const MOTIFS=['Cassée','Défaillante (bouchon, gaz, goût)','Périmée','Autre'];
+let cur={pid:null,q:1,motif:null,autre:'',photo:false}, declared=[], scn='normal', search='', toastT;
+const pidx=id=>P.find(p=>p.id===id);
+const ICO='<svg viewBox="0 0 24 24"><path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>';
+const ICOW='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v5M12 17h.01"/><path d="M10.3 3.9L2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>';
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.remove('hide'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.add('hide'),2600); }
+function setScenario(v){ scn=v; declared = v==='liste' ? [
+  {pid:'castel',q:1,motif:'Cassée',heure:'24/10 14 h 00'},
+  {pid:'castel',q:1,motif:'Défaillante (bouchon, gaz, goût)',heure:'27/10 11 h 00'},
+  {pid:'heineken',q:1,motif:'Périmée',heure:'28/10 09 h 30'}
+] : []; cur={pid:null,q:1,motif:null,autre:'',photo:false}; render(); }
+function setSearch(v){ search=v.trim().toLowerCase(); renderPick(); }
+function pick(id){ cur.pid=id; cur.q=1; cur.motif=null; cur.autre=''; render(); }
+function step(d){ const p=pidx(cur.pid); cur.q=Math.max(1,Math.min(p.stock||1, cur.q+d)); if(p.stock && cur.q===p.stock && d>0 && cur.q>=p.stock){} renderForm(); }
+function setMotif(m){ cur.motif=m; renderForm(); }
+
+function render(){
+  const nav=[['Vente','M6 3h12v18l-3-2-3 2-3-2-3 2z'],['Stock','M3 4h18v5H3zM5 9v10h14V9'],['Pénurie','M12 8v5M12 17h.01M10 3h4l8 17H2z'],['Ravitaill.','M3 7h13v10H3zM16 10h3l2 3v4h-5'],['Inventaire','M9 5h10M9 12h10M9 19h10'],['Stats','M4 20V10M10 20V4M16 20v-7M22 20H2']];
+  document.getElementById('nav').innerHTML=nav.map(([l,d],i)=>`<button class="tab ${i===0?'on':''}" onclick="toast('${l} : écran du fichier suivant')"><svg viewBox="0 0 24 24"><path d="${d}"/></svg>${l}</button>`).join('');
+  renderPane();
+}
+function renderPane(){
+  const pane=document.getElementById('pane');
+  pane.innerHTML = `
+    <div class="note">La casse est une perte de la buvette. Elle est soldée à l'inventaire. Aucune décision n'est attendue du propriétaire.</div>
+    <div class="sec">Déclarer</div>
+    <div id="pickArea"></div>
+    <div id="formArea"></div>
+    <div class="sec">Casses depuis le dernier inventaire</div>
+    <div class="card" style="padding:4px 14px">${declaredList()}</div>`;
+  renderPick(); renderForm();
+}
+function renderPick(){
+  const area=document.getElementById('pickArea'); if(!area) return;
+  if(cur.pid){ area.innerHTML=`<div class="card" style="display:flex;justify-content:space-between;align-items:center"><div><b>${pidx(cur.pid).name}</b><div style="font-size:12px;color:var(--muted)">Stock : ${pidx(cur.pid).stock} bouteilles</div></div><button class="btn-ghost" style="border-radius:999px;height:36px;padding:0 14px;border:0;background:none;box-shadow:inset 0 0 0 1.5px var(--forest-deep);font-weight:600;font-size:13px" onclick="cur.pid=null;render()">Changer</button></div>`; return; }
+  const list=P.filter(p=>!search || p.name.toLowerCase().includes(search));
+  if(!document.getElementById('q')){ area.innerHTML=`<input class="search" id="q" placeholder="Rechercher une boisson" oninput="setSearch(this.value)"><div class="grid" id="grid"></div>`; }
+  document.getElementById('grid').innerHTML=list.map(p=>`<button class="tile" onclick="pick('${p.id}')"><div class="img" style="background:${p.tile}">${ICO}</div><div class="t"><div class="n">${p.name}</div><div class="s">${p.stock} b. en stock</div></div></button>`).join('');
+}
+function renderForm(){
+  const area=document.getElementById('formArea'); if(!area) return;
+  if(!cur.pid){ area.innerHTML=''; return; }
+  const p=pidx(cur.pid);
+  area.innerHTML=`<div class="sec">Quantité cassée (bouteilles)</div>
+    <div class="card"><div class="stepper"><button onclick="step(-1)" aria-label="Moins">−</button><span class="v">${cur.q}</span><button onclick="step(1)" aria-label="Plus">+</button></div></div>
+    <div class="sec">Motif</div>
+    <div class="motifs">${MOTIFS.map(m=>`<button class="motif ${cur.motif===m?'on':''}" onclick="setMotif('${m}')">${m}</button>`).join('')}</div>
+    ${cur.motif==='Autre'?`<div style="margin-top:10px"><textarea class="textin" id="autre" placeholder="Précisez le motif">${cur.autre}</textarea></div>`:''}
+    <div style="margin-top:12px"><label class="photo">Ajouter une photo (facultatif)<input type="file" accept="image/*" onchange="cur.photo=true;toast('Photo ajoutée')"></label></div>
+    <button class="btn btn-danger" ${cur.motif?'':'disabled'} onclick="askConfirm()">Déclarer ${cur.q} bouteille${cur.q>1?'s':''}</button>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center">${p.name} · le stock baisse immédiatement</div>`;
+}
+function askConfirm(){
+  const a=document.getElementById('autre'); if(a) cur.autre=a.value.trim();
+  if(cur.motif==='Autre' && !cur.autre){ toast('Précisez le motif'); return; }
+  const c=document.getElementById('conf'); c.classList.remove('hide');
+  c.innerHTML=`<div class="confcard"><h3>Confirmer la casse ?</h3><p>${cur.q} × ${pidx(cur.pid).name} · ${cur.motif==='Autre'?cur.autre:cur.motif}.</p><p><b>Cette déclaration ne peut pas être annulée.</b></p>
+    <button class="btn btn-danger" onclick="declare()">Valider la déclaration</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('conf').classList.add('hide')">Retour</button></div>`;
+}
+function declare(){
+  const p=pidx(cur.pid); p.stock=Math.max(0,p.stock-cur.q);
+  const now=new Date(); const heure='29/10 '+'10 h 58';
+  declared.unshift({pid:cur.pid,q:cur.q,motif:cur.motif==='Autre'?cur.autre:cur.motif,heure});
+  cur={pid:null,q:1,motif:null,autre:'',photo:false};
+  document.getElementById('conf').classList.add('hide');
+  toast('Casse déclarée. Stock mis à jour.'); render();
+}
+function declaredList(){
+  if(!declared.length) return '<div class="empty">Aucune casse déclarée depuis le dernier inventaire.</div>';
+  return declared.map(d=>`<div class="line"><div>${pidx(d.pid).name}<small>${d.motif} · ${d.heure}</small></div><b>${d.q} b.</b></div>`).join('');
+}
+render();
+</script>
+</body>
+</html>

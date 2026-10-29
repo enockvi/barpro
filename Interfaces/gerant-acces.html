@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Gérant — Accès</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:16px;line-height:24px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit;cursor:pointer}
+.hide{display:none!important}
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08);padding:0 16px;font-size:14px;outline:none}
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.screen{position:absolute;inset:44px 0 0 0;padding:8px 24px 32px;display:flex;flex-direction:column;overflow-y:auto;background:var(--paper)}
+.screen.dark{background:var(--forest);color:var(--white)}
+.sync{position:absolute;top:52px;left:0;right:0;z-index:5;display:flex;justify-content:center;pointer-events:none}
+.sync span{font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--white);box-shadow:0 8px 24px rgba(11,31,22,.08);display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--lime);display:inline-block}
+.dot.wait{background:var(--amber)}
+.offline{background:var(--amber);color:#4D3500;font-size:13px;font-weight:600;text-align:center;padding:10px;position:absolute;top:44px;left:0;right:0;z-index:6}
+.mark{width:64px;height:64px;margin:16px 0 24px}
+h1{font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.lead{color:var(--muted);margin:10px 0 28px;font-size:16px}
+.spacer{flex:1}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:0 20px;border-radius:999px;border:0;font-weight:600;font-size:16px;margin-top:12px}
+.btn-primary{background:var(--lime);color:var(--forest-deep)}
+.btn-ghost{background:transparent;color:var(--forest-deep);box-shadow:inset 0 0 0 1.5px var(--forest-deep)}
+.btn:active{transform:scale(.98)}
+.link{background:none;border:0;color:var(--mid);font-weight:600;padding:12px;margin:0 auto;display:block}
+.card{background:var(--white);border-radius:24px;padding:20px;box-shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08);margin-bottom:12px}
+.card b{display:block;font-size:17px;margin-bottom:4px}
+.card p{color:var(--muted);font-size:14px;line-height:20px}
+.notice{border-radius:20px;padding:16px 18px;margin-bottom:16px;font-size:14px;line-height:21px;display:flex;gap:12px;align-items:flex-start}
+.notice svg{width:20px;height:20px;flex:none;margin-top:1px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.n-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.n-warn{background:#FDF0CF;color:#7A5300}
+.n-err{background:#FFE1DD;color:#9A2A1E}
+.n-info{background:#E3EEFF;color:#1B4D9B}
+.intro-art{height:200px;border-radius:28px;background:var(--forest);display:grid;place-items:center;margin-bottom:24px}
+.intro-art svg{width:96px;height:96px}
+.steps{display:flex;gap:8px;justify-content:center;margin:0 0 20px}
+.steps i{width:28px;height:4px;border-radius:999px;background:var(--line)}
+.steps i.on{background:var(--forest)}
+.tabs{display:flex;background:var(--white);border-radius:999px;padding:4px;box-shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08);margin-bottom:20px}
+.tabs button{flex:1;height:40px;border:0;background:none;border-radius:999px;font-weight:600;font-size:14px;color:var(--muted)}
+.tabs button.on{background:var(--forest);color:var(--lime)}
+.guide{background:var(--white);border-radius:20px;padding:16px;box-shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08);margin-bottom:12px}
+.guide ol{padding-left:20px;font-size:15px;line-height:24px}
+.guide li{margin-bottom:6px}
+.pill-code{font-family:var(--mono);font-size:24px;letter-spacing:.14em;background:var(--forest);color:var(--lime);border-radius:18px;padding:18px;text-align:center;margin:12px 0}
+.bigicon{width:84px;height:84px;border-radius:50%;background:var(--lime-soft);display:grid;place-items:center;margin:24px auto 16px}
+.bigicon svg{width:40px;height:40px;stroke:var(--forest-deep);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.bigicon.err{background:#FFE1DD}
+.bigicon.err svg{stroke:#9A2A1E}
+.center{text-align:center}
+.band{background:#FDF0CF;color:#7A5300;border-radius:18px;padding:14px 16px;margin-bottom:16px;font-size:14px;line-height:20px}
+.ro{background:var(--forest);color:var(--lime);font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;display:inline-block;margin-bottom:10px}
+.ico-row{display:flex;gap:12px;align-items:center;background:var(--white);border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08);margin-bottom:10px;font-size:14px}
+.ico-row svg{width:20px;height:20px;flex:none;stroke:var(--forest);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gate{background:#FFE1DD;color:#9A2A1E;border-radius:18px;padding:14px 16px;font-size:14px;line-height:20px;margin-bottom:14px}
+.input{width:100%;height:56px;border-radius:16px;border:0;background:var(--white);box-shadow:inset 0 0 0 1px var(--line);padding:0 18px;font-size:17px;outline:none}
+.input:focus{box-shadow:inset 0 0 0 2px var(--mid),0 0 0 4px rgba(139,250,90,.35)}
+.input.code{font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;text-align:center;font-size:19px}
+.err{background:#FFE1DD;color:#9A2A1E;border-radius:16px;padding:12px 14px;font-size:14px;margin-top:12px}
+/* Mode sombre automatique selon le téléphone */
+@media (prefers-color-scheme:dark){
+  .phone .screen:not(.dark){background:#06231A;color:#F5F8F3}
+  .phone .screen:not(.dark) h1{color:#F5F8F3}
+  .phone .screen:not(.dark) .lead{color:rgba(255,255,255,.72)}
+  .phone .screen:not(.dark) .card,.phone .screen:not(.dark) .ico-row,.phone .screen:not(.dark) .guide,.phone .screen:not(.dark) .tabs{background:#0B3322;color:#F5F8F3}
+  .phone .screen:not(.dark) .card p{color:rgba(255,255,255,.7)}
+  .phone .screen:not(.dark) .ico-row svg{stroke:#8BFA5A}
+  .phone .screen:not(.dark) .input{background:#0B3322;color:#F5F8F3;box-shadow:inset 0 0 0 1px #1F5C3F}
+  .phone .screen:not(.dark) .steps i{background:#1F5C3F}
+  .phone .screen:not(.dark) .steps i.on{background:#8BFA5A}
+  .phone .screen:not(.dark) .btn-ghost{color:#F5F8F3;box-shadow:inset 0 0 0 1.5px #F5F8F3}
+  .phone .screen:not(.dark) .link{color:#8BFA5A}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label for="scenario">Scénario de démonstration</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="essai">Essai en cours (6 jours)</option>
+    <option value="lecture">Abonnement expiré, lecture seule</option>
+    <option value="bande">Fin d'abonnement dans 2 jours</option>
+    <option value="suspendu">Suspendu</option>
+    <option value="passation">Nouveau gérant : POS verrouillé (inventaire de passation)</option>
+    <option value="utilise">Lien déjà utilisé ou révoqué</option>
+  </select>
+</div>
+
+<div class="phone" id="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="sync" id="syncChip"><span><i class="dot"></i>Synchronisé</span></div>
+  <div class="offline hide" id="offline">Hors ligne · vos ventes seront synchronisées plus tard</div>
+
+  <!-- Ouverture du lien -->
+  <div class="screen" id="s-lien">
+    <svg class="mark" viewBox="0 0 200 200"><use href="#mark"/></svg>
+    <h1>Bienvenue, Rachelle</h1>
+    <p class="lead">Votre propriétaire vous a donné accès à <b>Buvette Chez Mama Africa</b>. Aucun mot de passe n'est demandé.</p>
+    <div class="card"><b>Lien personnel</b><p>Ce lien ne fonctionne qu'une fois. Il est lié à votre téléphone.</p></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-intro1')">Commencer</button>
+  </div>
+
+  <!-- Introduction -->
+  <div class="screen" id="s-intro1">
+    <div class="steps"><i class="on"></i><i></i><i></i></div>
+    <div class="intro-art"><svg viewBox="0 0 200 200"><use href="#mark"/></svg></div>
+    <h1>Vendez en un geste</h1>
+    <p class="lead">Un clic sur une boisson ajoute une bouteille. Le stock se met à jour tout seul.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-intro2')">Suivant</button>
+    <button class="link" onclick="go('s-install')">Passer</button>
+  </div>
+  <div class="screen" id="s-intro2">
+    <div class="steps"><i></i><i class="on"></i><i></i></div>
+    <div class="intro-art"><svg viewBox="0 0 200 200"><use href="#mark"/></svg></div>
+    <h1>Modifiable pendant 1 heure</h1>
+    <p class="lead">Un ticket peut être corrigé pendant une heure. Ensuite, il est verrouillé.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-intro3')">Suivant</button>
+  </div>
+  <div class="screen" id="s-intro3">
+    <div class="steps"><i></i><i></i><i class="on"></i></div>
+    <div class="intro-art"><svg viewBox="0 0 200 200"><use href="#mark"/></svg></div>
+    <h1>Ça marche sans réseau</h1>
+    <p class="lead">Vous pouvez vendre hors connexion. Les ventes partent dès que le réseau revient.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-install')">Installer l'application</button>
+  </div>
+
+  <!-- Installation -->
+  <div class="screen" id="s-install">
+    <h1>Installer BarPro</h1>
+    <p class="lead">Ouvrez l'application depuis votre écran d'accueil, comme une vraie appli.</p>
+    <div class="tabs"><button class="on" id="tAnd" onclick="tab('and')">Android</button><button id="tIos" onclick="tab('ios')">iPhone</button></div>
+    <div class="guide" id="gAnd"><ol><li>Ouvrez ce lien dans <b>Chrome</b>.</li><li>Appuyez sur le menu <b>⋮</b>.</li><li>Choisissez <b>« Installer l'application »</b>.</li></ol></div>
+    <div class="guide hide" id="gIos"><ol><li>Ouvrez ce lien dans <b>Safari</b>.</li><li>Appuyez sur <b>Partager</b>.</li><li>Choisissez <b>« Sur l'écran d'accueil »</b>.</li></ol></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-liaison')">J'ai installé l'application</button>
+    <button class="link" onclick="go('s-liaison')">La session n'apparaît pas ?</button>
+  </div>
+
+  <!-- Code de liaison -->
+  <div class="screen" id="s-liaison">
+    <h1>Code de liaison</h1>
+    <p class="lead">Si la session n'apparaît pas dans l'appli installée, retapez ce code.</p>
+    <div class="pill-code">K3PX-7MQ2-RZDA</div>
+    <div class="notice n-info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>Valable 10 minutes.</span></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-accueil')">Continuer</button>
+  </div>
+
+  <!-- Lien refusé -->
+  <div class="screen" id="s-utilise">
+    <div class="bigicon err"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg></div>
+    <h1 class="center">Ce lien n'est plus valide</h1>
+    <p class="lead center">Demandez-en un nouveau au propriétaire.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" onclick="go('s-lien')">Retour</button>
+  </div>
+
+  <!-- Suspendu -->
+  <div class="screen" id="s-suspendu">
+    <div class="bigicon"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+    <h1 class="center">Accès suspendu</h1>
+    <p class="lead center">Contactez BarPro pour rétablir l'accès.</p>
+  </div>
+
+  <!-- Passation : POS verrouillé -->
+  <div class="screen" id="s-passation">
+    <div class="bigicon"><svg viewBox="0 0 24 24"><path d="M4 7h16v12H4z"/><path d="M8 7V5h8v2"/></svg></div>
+    <h1 class="center">Inventaire de passation</h1>
+    <p class="lead center">Le propriétaire a déclaré un changement de gérant. Faites l'inventaire avant de vendre.</p>
+    <div class="card"><b>Inventaire de passation demandé</b><p>La vente reste verrouillée tant que l'inventaire n'est pas validé.</p></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="toast('Ouverture de l\'inventaire de passation')">Commencer l'inventaire</button>
+  </div>
+
+  <!-- Accueil de contrôle (état du bar) -->
+  <div class="screen" id="s-accueil">
+    <div id="stateBanner"></div>
+    <span class="ro hide" id="roTag">LECTURE SEULE</span>
+    <h1>Bonjour, Rachelle</h1>
+    <p class="lead" style="margin-bottom:16px">Buvette Chez Mama Africa · Cotonou</p>
+    <div class="card"><b>Chiffre d'affaires du jour</b><p class="mono" style="font-size:22px;color:var(--ink);margin-top:4px">248 000 F</p><p>Ventes : onglet Vente. Stock et ravitaillement : onglets suivants.</p></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" id="goSale" onclick="toast('Ouverture de l\'écran Vente (fichier suivant)')">Ouvrir la vente</button>
+    <button class="btn btn-ghost" onclick="go('s-lien')">Revoir l'accès</button>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="mark" viewBox="0 0 200 200"><rect width="200" height="200" rx="46" fill="#8BFA5A"/><path fill="#0B3322" d="M64 23 H88.5 V60 C88.5 66 106.6 74 106.6 92 V157 Q106.6 169 94.6 169 H58 Q46 169 46 157 V92 C46 74 64 66 64 60 Z"/><path fill="#8BFA5A" stroke="#8BFA5A" stroke-width="7" stroke-linejoin="round" d="M84 92 H160 L152.6 160 Q151.6 169 142 169 H104 Q94.5 169 95.5 160 Z"/><path fill="#0B3322" d="M84 92 H160 L152.6 160 Q151.6 169 142 169 H104 Q94.5 169 95.5 160 Z"/></symbol>
+</defs></svg>
+
+<script>
+const TODAY=new Date('2026-10-29T10:00:00');
+let sc='essai', pending=0;
+const SCREENS=['s-lien','s-intro1','s-intro2','s-intro3','s-install','s-liaison','s-utilise','s-suspendu','s-passation','s-accueil'];
+function go(id){ SCREENS.forEach(s=>document.getElementById(s).classList.toggle('hide', s!==id)); if(id==='s-accueil') renderHome(); }
+function setScenario(v){
+  sc=v;
+  if(v==='utilise'){ return go('s-utilise'); }
+  if(v==='suspendu'){ return go('s-suspendu'); }
+  if(v==='passation'){ return go('s-passation'); }
+  go('s-lien');
+}
+function renderHome(){
+  const ban=document.getElementById('stateBanner');
+  const ro=document.getElementById('roTag');
+  const sale=document.getElementById('goSale');
+  let html='';
+  ro.classList.add('hide'); sale.disabled=false; sale.style.opacity='1';
+  if(sc==='bande'){ html=`<div class="band"><b>L'abonnement se termine le 31/10/2026.</b><br>Contactez le propriétaire.</div>`; }
+  else if(sc==='essai'){ html=`<div class="notice n-info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Essai en cours, jusqu'au 05/11/2026.</span></div>`; }
+  else if(sc==='lecture'){
+    html=`<div class="notice n-err"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span><b>Lecture seule.</b> L'abonnement est expiré. Vente, ravitaillement, casse et inventaire sont bloqués. Contactez le propriétaire.</span></div>`;
+    ro.classList.remove('hide'); sale.disabled=true; sale.style.opacity='.4';
+  }
+  ban.innerHTML=html;
+}
+function tab(w){ const a=w==='and'; document.getElementById('tAnd').classList.toggle('on',a); document.getElementById('tIos').classList.toggle('on',!a); document.getElementById('gAnd').classList.toggle('hide',!a); document.getElementById('gIos').classList.toggle('hide',a); }
+function toast(m){ alert(m); }
+window.addEventListener('offline',()=>{ document.getElementById('offline').classList.remove('hide'); pending=2; chip(); });
+window.addEventListener('online',()=>{ document.getElementById('offline').classList.add('hide'); pending=0; chip(); });
+function chip(){ document.getElementById('syncChip').innerHTML = pending? `<span><i class="dot wait"></i>${pending} actions en attente</span>` : `<span><i class="dot"></i>Synchronisé</span>`; }
+go('s-lien');
+</script>
+</body>
+</html>

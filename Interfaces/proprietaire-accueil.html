@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Propriétaire — Accueil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,select{font:inherit;color:inherit;cursor:pointer}
+.hide{display:none!important}
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;outline:none}
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.topbar{padding:4px 20px 12px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.picker{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;font-weight:600;outline:none;max-width:230px}
+.sync{font-size:12px;font-weight:600;padding:6px 10px;border-radius:999px;background:var(--white);box-shadow:var(--shadow);white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--lime);display:inline-block}
+.dot.wait{background:var(--amber)}
+.content{flex:1;overflow-y:auto;padding:0 20px 24px}
+.hello h1{font-size:28px;line-height:34px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.hello p{color:var(--muted);margin-top:4px}
+.banner{border-radius:20px;padding:14px 16px;margin:16px 0;font-size:14px;line-height:20px;display:flex;gap:12px;align-items:flex-start}
+.banner svg{width:20px;height:20px;flex:none;margin-top:1px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.b-warn{background:#FDF0CF;color:#7A5300}
+.b-err{background:#FFE1DD;color:#9A2A1E}
+.b-info{background:#E3EEFF;color:#1B4D9B}
+.b-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.banner .btn-mini{margin-left:auto;align-self:center;height:32px;padding:0 12px;border-radius:999px;border:0;background:var(--forest);color:var(--white);font-weight:600;font-size:12px;white-space:nowrap}
+.readonly-tag{font-size:12px;font-weight:700;background:var(--forest);color:var(--lime);padding:4px 10px;border-radius:999px;display:inline-block;margin-bottom:8px}
+/* Cartes du jour */
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.kpi{background:var(--white);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.kpi.wide{grid-column:1/-1;background:var(--forest);color:var(--white)}
+.kpi span{font-size:12px;color:var(--muted);font-weight:600;display:block;letter-spacing:.02em}
+.kpi.wide span{color:rgba(255,255,255,.7)}
+.kpi b{display:block;font-size:22px;line-height:28px;font-weight:800;letter-spacing:-.02em;margin-top:6px;font-family:var(--mono)}
+.kpi.wide b{font-size:30px;color:var(--lime)}
+.kpi small{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+.kpi.wide small{color:rgba(255,255,255,.65)}
+.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);font-weight:700;margin:24px 0 10px}
+.sec-row{display:flex;justify-content:space-between;align-items:center;margin:24px 0 10px}
+.sec-row .sec{margin:0}
+.sec-row button{background:none;border:0;color:var(--mid);font-weight:600;font-size:13px}
+/* Alertes */
+.alert{width:100%;background:var(--white);border-radius:18px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);border:0;text-align:left;display:flex;gap:12px;align-items:flex-start}
+.alert .ico{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none}
+.alert .ico svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.alert b{display:block;font-size:14px;font-weight:700}
+.alert span{display:block;font-size:13px;color:var(--muted);margin-top:2px;line-height:19px}
+.alert .go{margin-left:auto;align-self:center;color:var(--mid);font-weight:600;font-size:13px;white-space:nowrap;padding-left:8px}
+.ic-warn{background:#FDF0CF;color:#7A5300}
+.ic-err{background:#FFE1DD;color:#9A2A1E}
+.ic-info{background:#E3EEFF;color:#1B4D9B}
+.ic-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.empty{font-size:14px;color:var(--muted);padding:14px 0}
+/* Ravitaillement du jour */
+.list{background:var(--white);border-radius:20px;box-shadow:var(--shadow);overflow:hidden}
+.row{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);align-items:flex-start}
+.row:last-child{border:0}
+.row .time{font-family:var(--mono);font-size:13px;color:var(--muted);width:44px;flex:none;padding-top:1px}
+.row b{font-size:14px;display:block}
+.row small{font-size:13px;color:var(--muted)}
+.tag{font-size:11px;font-weight:700;background:#FFE1DD;color:#9A2A1E;padding:3px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.row .qty{margin-left:auto;font-family:var(--mono);font-size:13px;white-space:nowrap;padding-top:1px}
+.total{display:flex;justify-content:space-between;padding:12px 16px;background:var(--paper);font-size:14px;font-weight:600}
+.total b{font-family:var(--mono)}
+/* Multi-bars */
+.multi{background:var(--white);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.multi .bar{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.multi .bar:last-child{border:0}
+.multi .bar b{font-family:var(--mono)}
+.multi .total-all{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.multi .total-all b{font-family:var(--mono);font-size:24px;letter-spacing:-.02em}
+/* Barre d'onglets */
+.tabbar{flex:none;background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 22px;position:relative}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--muted);min-height:48px;padding-top:2px;position:relative}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--forest)}
+.tab.on svg{stroke:var(--forest)}
+.tab.on::before{content:"";position:absolute;top:-8px;width:28px;height:3px;border-radius:999px;background:var(--lime)}
+.badge-n{position:absolute;top:0;left:calc(50% + 8px);background:var(--coral);color:var(--white);font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:999px;display:grid;place-items:center;padding:0 5px}
+.toast{position:absolute;left:20px;right:20px;bottom:96px;background:var(--forest);color:var(--white);padding:12px 16px;border-radius:16px;font-size:14px;font-weight:600;box-shadow:var(--shadow);z-index:20;text-align:center}
+.dim{opacity:.55}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label for="scenario">Scénario de démonstration</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="normal">Abonnement actif, 1 bar</option>
+    <option value="multi">Abonnement actif, 2 bars (annexe)</option>
+    <option value="bande">Fin d'abonnement dans 2 jours</option>
+    <option value="expire">Expiré (lecture seule)</option>
+  </select>
+</div>
+
+<div class="phone" id="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="topbar">
+    <select class="picker" id="barPicker" onchange="render()"></select>
+    <span class="sync" id="sync"><i class="dot"></i>Sync 07:58</span>
+  </div>
+
+  <div class="content" id="content"></div>
+
+  <nav class="tabbar" id="tabbar"></nav>
+  <div class="toast hide" id="toast"></div>
+</div>
+
+<script>
+// ---------- Données d'exemple ----------
+const BARS={
+  chez:{name:'Buvette Chez Mama Africa',loc:'Cotonou'},
+  centre:{name:'Buvette Centre',loc:'Cotonou · annexe'}
+};
+// Chiffres du jour : bénéfice brut et casse toujours séparés, jamais « bénéfice après casse »
+const DATA={
+  chez:{ca:248000, tickets:41, benefice:61400, casse:4800, sync:'07:58', ravit:[
+      {h:'08:15',who:'Rachelle',items:'Castel 65 cl',q:'2 casiers'},
+      {h:'08:20',who:'Rachelle',items:'Fanta 33 cl',q:'3 casiers'},
+      {h:'11:40',who:'Rachelle',items:'Heineken 33 cl',q:'+6 bouteilles',corr:'Correction : erreur de saisie'}
+    ], ravitTotal:'72 500 F', pen:3, expired:false},
+  centre:{ca:96500, tickets:18, benefice:23100, casse:1200, sync:'07:40', ravit:[
+      {h:'09:05',who:'Rachelle',items:'Coca-Cola 33 cl',q:'2 casiers'}
+    ], ravitTotal:'11 520 F', pen:1, expired:false}
+};
+const SCN={
+  normal:{bars:['chez'], expired:false, banner:null},
+  multi:{bars:['chez','centre'], expired:false, banner:null},
+  bande:{bars:['chez'], expired:false, banner:'bande'},
+  expire:{bars:['chez'], expired:true, banner:'expire'}
+};
+const ALERTS=[
+  {k:'pen',cls:'ic-warn',title:'Pénurie : 3 produits',txt:'Beaufort épuisé. La Béninoise et Fanta sont sous le seuil.',go:'Stock'},
+  {k:'casse',cls:'ic-err',title:'Casse déclarée',txt:'2 Castel déclarées par Rachelle : motif défaillant (gaz).',go:'Stock'},
+  {k:'prix',cls:'ic-info',title:'Changement de prix',txt:'Castel 65 cl : 8 400 F → 8 600 F, par Rachelle, le 28/10 à 16 h 20.',go:'Produits'},
+  {k:'corr',cls:'ic-warn',title:'Correction de ravitaillement',txt:'Heineken 33 cl : +6 bouteilles. Motif : erreur de saisie.',go:'Ravitaillement'},
+  {k:'heure',cls:'ic-warn',title:'Ticket à heure suspecte',txt:'Ticket n° 0214 : horloge reculée sur l\'appareil du gérant.',go:'Ventes'},
+  {k:'inv',cls:'ic-info',title:'Inventaire à consulter',txt:'Inventaire de Rachelle du 27/10, validé à 21 h 10.',go:'Inventaire'}
+];
+const TABS=[
+  {id:'accueil',label:'Accueil',ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'},
+  {id:'ventes',label:'Ventes',ico:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>'},
+  {id:'stock',label:'Stock',ico:'<rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9M9 13h6"/>'},
+  {id:'inventaire',label:'Inventaire',ico:'<path d="M9 5h10M9 12h10M9 19h10"/><path d="M4 5l1 1 2-2M4 12l1 1 2-2M4 19l1 1 2-2"/>'},
+  {id:'plus',label:'Plus',ico:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>',badge:3}
+];
+let scn='normal', tab='accueil', bar='chez';
+
+// ---------- Utilitaires ----------
+const F=n=>n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ')+' F';
+function setScenario(v){
+  scn=v; const s=SCN[v]; const p=document.getElementById('barPicker');
+  const opts = s.bars.map(k=>`<option value="${k}">${BARS[k].name}</option>`);
+  if(s.bars.length>1) opts.unshift('<option value="__all__">Tous mes bars</option>');
+  p.innerHTML=opts.join('');
+  p.value = s.bars.length>1 ? '__all__' : s.bars[0];
+  p.classList.toggle('hide',s.bars.length<2);
+  render();
+}
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.remove('hide'); clearTimeout(window.__t); window.__t=setTimeout(()=>t.classList.add('hide'),2200); }
+function ico(p,w=18){ return `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`; }
+const IC={
+  warn:'<path d="M12 8v5M12 17h.01"/><path d="M10.3 3.9L2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>',
+  err:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+  ok:'<path d="M5 12l5 5L20 7"/>',
+  lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'
+};
+
+// ---------- Rendu ----------
+function render(){
+  const s=SCN[scn]; if(!s) return;
+  bar=document.getElementById('barPicker').value||s.bars[0];
+  if(bar==='__all__') bar='chez';
+  const showAll = document.getElementById('barPicker').value==='__all__';
+  renderTabs(); renderSync();
+  const c=document.getElementById('content');
+  if(tab!=='accueil'){ c.innerHTML=placeholder(); return; }
+  c.innerHTML = showAll ? allBars() : barHome(bar, s);
+}
+function renderSync(){
+  const d=DATA[bar]||DATA.chez;
+  document.getElementById('sync').innerHTML=`<i class="dot"></i>Sync ${d.sync}`;
+}
+function renderTabs(){
+  const s=SCN[scn];
+  document.getElementById('tabbar').innerHTML=TABS.map(t=>{
+    const b = t.badge && pendingPenury()>0 ? `<span class="badge-n">${pendingPenury()}</span>` : '';
+    return `<button class="tab ${tab===t.id?'on':''}" onclick="goTab('${t.id}')">${ico(t.ico,24)}${t.label}${b}</button>`;
+  }).join('');
+}
+function pendingPenury(){ return (DATA.chez.pen||0); }
+function goTab(id){ tab=id; render(); }
+function placeholder(){
+  const t=TABS.find(x=>x.id===tab);
+  return `<div style="padding-top:60px;text-align:center;color:var(--muted)"><h2 style="font-size:22px;color:var(--forest-deep);margin-bottom:8px">${t.label}</h2><p>Cet écran est décrit dans le fichier suivant de la maquette.</p></div>`;
+}
+
+function banner(s){
+  if(s.expired) return `<div class="banner b-err">${ico(IC.lock)}<span><b>Abonnement expiré.</b> Lecture seule : vente et saisies bloquées. Un code réactive l'accès.</span></div>`;
+  if(s.banner==='bande') return `<div class="banner b-warn">${ico(IC.warn)}<span><b>Votre abonnement se termine le 31/10/2026.</b> Renouvelez avant la fin.</span><button class="btn-mini" onclick="toast('Ouverture WhatsApp BarPro')">WhatsApp</button></div>`;
+  return '';
+}
+function barHome(k,s){
+  const d=DATA[k], b=BARS[k];
+  const dim = s.expired ? 'dim' : '';
+  const alerts = ALERTS.filter(a=>k==='chez' || a.k==='pen');
+  return `
+  <div class="hello" style="margin-top:4px"><h1>Bonjour, M. Adjovi</h1><p>${b.name} · ${b.loc}</p></div>
+  ${banner(s)}
+  ${s.expired?'<span class="readonly-tag">LECTURE SEULE</span>':''}
+  <div class="kpis ${dim}">
+    <div class="kpi wide"><span>Chiffre d'affaires du jour</span><b>${F(d.ca)}</b><small>Journée commerciale en cours · provisoire jusqu'à 5 h · ${d.tickets} tickets</small></div>
+    <div class="kpi"><span>Bénéfice brut</span><b>${F(d.benefice)}</b><small>Avant casse</small></div>
+    <div class="kpi"><span>Casse</span><b>${F(d.casse)}</b><small>Perte de la buvette</small></div>
+  </div>
+
+  <div class="sec">Alertes</div>
+  ${alerts.map(a=>`<button class="alert" onclick="toast('Ouverture : ${a.go}')"><span class="ico ${a.cls}">${ico(IC[a.cls==='ic-err'?'err':a.cls==='ic-ok'?'ok':a.cls==='ic-info'?'info':'warn'],18)}</span><span style="flex:1"><b>${a.title}</b><span>${a.txt}</span></span><span class="go">${a.go} ›</span></button>`).join('')}
+  ${alerts.length? '' : '<div class="empty">Aucune alerte.</div>'}
+
+  <div class="sec-row"><div class="sec">Ravitaillement du jour</div><button onclick="toast('Liste complète : onglet Stock')">Voir tout</button></div>
+  <div class="list">
+    ${d.ravit.map(r=>`<div class="row"><span class="time">${r.h}</span><div style="flex:1"><b>${r.items}${r.corr?'<span class="tag">Correction</span>':''}</b><small>${r.who}${r.corr?' · '+r.corr:''}</small></div><span class="qty">${r.q}</span></div>`).join('')}
+    <div class="total"><span>Total du jour</span><b>${d.ravitTotal}</b></div>
+  </div>
+
+  <div class="sec">Synchronisation</div>
+  <div class="empty" style="padding-top:0">Dernière synchronisation avec le gérant : <b class="mono" style="color:var(--ink)">${d.sync}</b></div>
+  `;
+}
+function allBars(){
+  const sum=(f)=>Object.values(DATA).reduce((a,d)=>a+d[f],0);
+  const rows=['chez','centre'].map(k=>`<div class="bar"><span>${BARS[k].name}</span><b>${F(DATA[k].ca)}</b></div>`).join('');
+  return `
+  <div class="hello" style="margin-top:4px"><h1>Tous mes bars</h1><p>Tableau de bord consolidé</p></div>
+  <div class="multi" style="margin-top:16px">
+    <div class="total-all"><span style="color:var(--muted);font-weight:600">Chiffre d'affaires total</span><b>${F(sum('ca'))}</b></div>
+    ${rows}
+  </div>
+  <div class="sec">Alertes de tous les bars</div>
+  ${ALERTS.map(a=>`<button class="alert" onclick="toast('Ouverture : ${a.go}')"><span class="ico ${a.cls}">${ico(IC.warn,18)}</span><span style="flex:1"><b>${a.title}</b><span>${a.txt}</span></span></button>`).join('')}
+  `;
+}
+
+// Démarrage
+setScenario('normal');
+</script>
+</body>
+</html>
