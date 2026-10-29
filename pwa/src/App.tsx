@@ -6,8 +6,9 @@ import StockOwner from './pages/StockOwner';
 import Ravitaillement from './pages/Ravitaillement';
 import Casse from './pages/Casse';
 import Inventaire from './pages/Inventaire';
+import Stats from './pages/Stats';
 
-type Tab = 'pos' | 'tickets' | 'stock' | 'stockOwner' | 'ravit' | 'casse' | 'inventaire';
+type Tab = 'pos' | 'tickets' | 'stock' | 'stockOwner' | 'ravit' | 'casse' | 'inventaire' | 'stats';
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('pos');
@@ -20,6 +21,7 @@ function App() {
     { key: 'ravit', label: 'Ravit.', icon: '🚚' },
     { key: 'casse', label: 'Casse', icon: '⚠️' },
     { key: 'inventaire', label: 'Invent.', icon: '📋' },
+    { key: 'stats', label: 'Stats', icon: '📈' },
   ];
 
   return (
@@ -31,7 +33,8 @@ function App() {
         {activeTab === 'stockOwner' && <StockOwner />}
         {activeTab === 'ravit' && <Ravitaillement />}
         {activeTab === 'casse' && <Casse />
-        {activeTab === 'inventaire' && <Inventaire />}
+        {activeTab === 'inventaire' && <Inventaire />
+        {activeTab === 'stats' && <Stats />}
       </div>
 
       {/* Bottom Tab Bar */}
