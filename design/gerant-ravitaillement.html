@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Gérant — Ravitaillement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit;cursor:pointer}
+input{cursor:text}
+.hide{display:none!important}
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;outline:none}
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.top{padding:4px 18px 8px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.top h1{font-size:26px;line-height:32px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.top p{font-size:12px;color:var(--muted)}
+.subtabs{display:flex;background:var(--white);border-radius:999px;padding:4px;box-shadow:var(--shadow);margin:6px 18px 10px}
+.subtabs button{flex:1;height:36px;border:0;background:none;border-radius:999px;font-weight:600;font-size:13px;color:var(--muted)}
+.subtabs button.on{background:var(--forest);color:var(--lime)}
+.body{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+.scroll{flex:1;overflow-y:auto;padding:0 18px 24px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{background:var(--white);border:0;border-radius:20px;padding:0;overflow:hidden;box-shadow:var(--shadow);text-align:left}
+.tile .img{height:70px;display:grid;place-items:center}
+.tile .img svg{width:30px;height:30px;stroke:var(--forest-deep);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tile .t{padding:10px 12px 12px}
+.tile .n{font-weight:700;font-size:13px;line-height:17px}
+.tile .s{font-size:11px;color:var(--muted);margin-top:2px}
+.badge{position:absolute;top:6px;right:6px;background:var(--forest);color:var(--lime);font-family:var(--mono);font-size:12px;font-weight:600;min-width:26px;height:26px;border-radius:999px;display:grid;place-items:center;padding:0 6px}
+.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);font-weight:700;margin:14px 2px 8px}
+.card{background:var(--white);border-radius:20px;box-shadow:var(--shadow);padding:14px 16px;margin-bottom:12px}
+.line{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.line:last-child{border:0}
+.line .nm{flex:1;font-size:14px;font-weight:600}
+.line .nm small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.line .qty{font-family:var(--mono);font-size:13px;text-align:right;white-space:nowrap}
+.line .amt{font-family:var(--mono);font-size:13px;font-weight:600;min-width:72px;text-align:right}
+.line .x{background:none;border:0;color:var(--muted);font-size:18px;width:32px;height:32px}
+.total{display:flex;justify-content:space-between;align-items:baseline;padding:12px 0 2px}
+.total b{font-family:var(--mono);font-size:20px}
+.empty{text-align:center;color:var(--muted);padding:18px 8px;font-size:14px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:50px;border-radius:999px;border:0;font-weight:700;font-size:15px;margin-top:10px}
+.btn-lime{background:var(--lime);color:var(--forest-deep)}
+.btn-forest{background:var(--forest);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--forest-deep);box-shadow:inset 0 0 0 1.5px var(--forest-deep)}
+.btn-wa{background:#25D366;color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.warn{background:#FFE1DD;color:#9A2A1E;border-radius:18px;padding:14px 16px;font-size:14px;line-height:20px;margin-bottom:12px;font-weight:600}
+.check{display:flex;gap:12px;align-items:flex-start;background:var(--white);border-radius:18px;padding:14px;box-shadow:var(--shadow);margin:10px 0;font-size:14px}
+.check input{width:22px;height:22px;accent-color:#0B3322;flex:none;margin-top:1px}
+.lock{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;background:var(--forest);color:var(--lime);padding:4px 10px;border-radius:999px}
+.lock svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tag{font-size:11px;font-weight:700;background:#FDF0CF;color:#7A5300;padding:3px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.rav{background:var(--white);border-radius:20px;box-shadow:var(--shadow);padding:14px 16px;margin-bottom:12px}
+.rav-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.rav-h b{font-size:15px}
+.rav-h small{font-size:12px;color:var(--muted);display:block}
+.corr{background:#FFF7E0;border-radius:14px;padding:10px 12px;margin-top:8px;font-size:13px}
+.corr b{color:#7A5300}
+/* Pavé et fenêtre de saisie */
+.sheet-ov{position:absolute;inset:0;background:rgba(6,35,26,.45);display:flex;align-items:flex-end;z-index:20}
+.sheet{background:var(--paper);border-radius:28px 28px 0 0;padding:20px 18px 26px;width:100%;max-height:92%;overflow-y:auto}
+.sheet h3{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--forest-deep);margin-bottom:4px}
+.sheet p{color:var(--muted);font-size:13px;margin-bottom:12px}
+.stepRow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;margin-bottom:12px}
+.stepRow label{font-size:12px;font-weight:600;color:var(--forest-deep);grid-column:1/-1;margin-bottom:-6px}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:44px;height:44px;border-radius:50%;border:0;background:var(--white);box-shadow:inset 0 0 0 1px var(--line);font-size:22px;font-weight:600}
+.stepper .v{font-family:var(--mono);font-size:22px;min-width:44px;text-align:center}
+.amtInput{height:48px;border-radius:14px;border:0;background:var(--white);box-shadow:inset 0 0 0 1px var(--line);padding:0 14px;font-family:var(--mono);font-size:17px;width:100%;outline:none}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 10px}
+.pad button{height:46px;border-radius:14px;border:0;background:var(--white);box-shadow:var(--shadow);font-size:18px;font-weight:600}
+.pad button.g{background:transparent;box-shadow:none;color:var(--muted);font-size:14px}
+.reason{width:100%;min-height:72px;border-radius:14px;border:0;background:var(--white);box-shadow:inset 0 0 0 1px var(--line);padding:12px 14px;font-size:15px;outline:none;font-family:var(--font);resize:none}
+.toast{position:absolute;left:18px;right:18px;bottom:96px;background:var(--forest);color:var(--white);padding:12px 16px;border-radius:16px;font-size:14px;font-weight:600;text-align:center;z-index:40}
+.nav{flex:none;background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding:8px 4px 22px}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--muted);min-height:48px;padding-top:2px;position:relative}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--forest)}
+.tab.on::before{content:"";position:absolute;top:-8px;width:28px;height:3px;border-radius:999px;background:var(--lime)}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label for="scenario">Scénario</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="normal">Brouillon vide, ravitaillements validés du jour</option>
+    <option value="draft">Brouillon en cours (Castel + Coca)</option>
+  </select>
+</div>
+
+<div class="phone" id="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="top"><div><h1>Ravitaillement</h1><p>Journée du 29/10/2026</p></div></div>
+  <div class="subtabs" id="subtabs"></div>
+  <div class="body">
+    <div class="scroll" id="pane"></div>
+    <div class="sheet-ov hide" id="ov"></div>
+    <div class="toast hide" id="toast"></div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+</div>
+
+<script>
+// ---------- Produits : prix d'achat par casier (saisi par le gérant), prix de vente absent ----------
+const P=[
+ {id:'castel',name:'Castel 65 cl',bpc:12,buyC:8400,tile:'#FCE7B0',stock:32},
+ {id:'beaufort',name:'Beaufort 65 cl',bpc:12,buyC:8100,tile:'#E8D3B5',stock:0},
+ {id:'benin',name:'La Béninoise 65 cl',bpc:12,buyC:7800,tile:'#F7D9C4',stock:9},
+ {id:'heineken',name:'Heineken 33 cl',bpc:24,buyC:14400,tile:'#CDEBD0',stock:28},
+ {id:'coca',name:'Coca-Cola 33 cl',bpc:24,buyC:5760,tile:'#F9C9C0',stock:74},
+ {id:'fanta',name:'Fanta 33 cl',bpc:24,buyC:5760,tile:'#FFD9A8',stock:18},
+ {id:'sprite',name:'Sprite 33 cl',bpc:24,buyC:5760,tile:'#D5F0C8',stock:48},
+ {id:'ananas',name:'Top Ananas 33 cl',bpc:24,buyC:5520,tile:'#FCEBB0',stock:30},
+ {id:'pos50',name:'Possotomè 50 cl',bpc:12,buyC:2400,tile:'#D3E8F7',stock:36},
+ {id:'pos15',name:'Possotomè 1,5 L',bpc:6,buyC:1800,tile:'#CFE6F5',stock:9},
+ {id:'cris50',name:'Cristal 50 cl',bpc:12,buyC:2400,tile:'#DDEEF9',stock:24},
+ {id:'cris15',name:'Cristal 1,5 L',bpc:6,buyC:1800,tile:'#C8E2F4',stock:12}
+];
+// Ravitaillements validés de la journée. Une correction ne modifie jamais la ligne d'origine.
+let RAVIT=[
+ {id:'R1',h:'08 h 15',who:'Rachelle',locked:true,lines:[{pid:'castel',c:2,b:0,buyC:8400},{pid:'fanta',c:3,b:0,buyC:5760}],corr:[
+   {id:'C1',h:'11 h 40',pid:'heineken',delta:6,motif:'Erreur de saisie',unit:600}]}
+];
+let draft=[], sub='brouillon', dayIdx=0, pick=null, scn='normal', toastT;
+const pidx=id=>P.find(p=>p.id===id);
+const F=n=>Math.round(n).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ')+' F';
+const ICO={box:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>', lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>', plus:'<path d="M12 5v14M5 12h14"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>', back:'<path d="M15 5l-7 7 7 7"/>', wa:'<path d="M4 20l1.4-4.2A8 8 0 1 1 8.5 19z"/>', pdf:'<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h6M9 16h6"/>'};
+const ico=(p,w=14)=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const DAYS=[['29/10/2026','Aujourd\'hui']];
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.remove('hide'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.add('hide'),2600); }
+
+function setScenario(v){ scn=v; draft = v==='draft' ? [
+   {id:'castel',c:2,b:0,buyC:8400},{id:'coca',c:3,b:0,buyC:5760}
+  ] : []; sub='brouillon'; render(); }
+function setSub(s){ sub=s; render(); }
+function renderSub(){
+  const T=[['brouillon','Ravitaillement'],['liste','Liste du jour']];
+  document.getElementById('subtabs').innerHTML=T.map(([k,l])=>`<button class="${sub===k?'on':''}" onclick="setSub('${k}')">${l}</button>`).join('');
+}
+function renderNav(){
+  const T=[['Vente','M6 3h12v18l-3-2-3 2-3-2-3 2z'],['Stock','M3 4h18v5H3zM5 9v10h14V9'],['Pénurie','M12 8v5M12 17h.01M10 3h4l8 17H2z'],['Ravitaill.','M3 7h13v10H3zM16 10h3l2 3v4h-5'],['Inventaire','M9 5h10M9 12h10M9 19h10'],['Stats','M4 20V10M10 20V4M16 20v-7M22 20H2']];
+  document.getElementById('nav').innerHTML=T.map(([l,d],i)=>`<button class="tab ${i===3?'on':''}" onclick="toast('${l} : écran du fichier suivant')"><svg viewBox="0 0 24 24"><path d="${d}"/></svg>${l}</button>`).join('');
+}
+function render(){ renderSub(); renderNav(); document.getElementById('pane').innerHTML = sub==='brouillon' ? draftView() : listView(); }
+
+// Quantité totale en bouteilles et montant d'une ligne
+const qtyB=l=>l.c*pidx(l.pid).bpc + l.b;
+const lineAmt=l=> l.c*l.buyC + Math.round(l.b*(l.buyC/pidx(l.pid).bpc));
+const fmtQ=(c,b)=> `${c} casier${c>1?'s':''}${b?' + '+b+' b.':''}`;
+
+// ---------- Brouillon ----------
+function draftView(){
+  const grid = P.map(p=>{
+    const d=draft.find(x=>x.id===p.id);
+    return `<button class="tile" style="position:relative" onclick="openEntry('${p.id}')">
+      ${d?`<span class="badge">${d.c}c${d.b?' + '+d.b:''}</span>`:''}
+      <div class="img" style="background:${p.tile}">${ico(ICO.box,30)}</div>
+      <div class="t"><div class="n">${p.name}</div><div class="s">${p.bpc} par casier</div></div></button>`;
+  }).join('');
+  const lines = draft.length ? draft.map((l,i)=>{ const p=pidx(l.pid);
+     return `<div class="line"><div class="nm">${p.name}<small>${fmtQ(l.c,l.b)} · ${F(l.buyC)} le casier</small></div><div class="amt">${F(lineAmt(l))}</div><button class="x" onclick="removeLine(${i})" aria-label="Supprimer">×</button></div>`; }).join('')
+     : '<div class="empty">Aucune ligne. Touchez une boisson pour saisir le ravitaillement reçu.</div>';
+  const total = draft.reduce((a,l)=>a+lineAmt(l),0);
+  return `<div class="sec">Boissons</div><div class="grid">${grid}</div>
+    <div class="sec">Brouillon</div><div class="card" style="padding:4px 14px">${lines}
+      ${draft.length?`<div class="total"><span>Total</span><b>${F(total)}</b></div>`:''}</div>
+    <button class="btn btn-lime" ${draft.length?'':'disabled'} onclick="openRecap()">Terminer</button>
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;text-align:center">Les lignes restent modifiables tant que le ravitaillement n'est pas validé.</div>`;
+}
+function removeLine(i){ draft.splice(i,1); render(); }
+
+// Fenêtre de saisie d'une boisson
+function openEntry(pid){
+  const p=pidx(pid); const d=draft.find(x=>x.id===pid);
+  pick={pid, c: d?d.c:0, b: d?d.b:0, buyC: d?d.buyC:p.buyC, editing: !!d};
+  renderEntry();
+}
+function renderEntry(){
+  const p=pidx(pick.pid);
+  const ov=document.getElementById('ov'); ov.classList.remove('hide');
+  ov.innerHTML = `<div class="sheet">
+    <h3>${p.name}</h3><p>Saisissez ce qui est arrivé. Le prix d'achat par casier peut être confirmé ou corrigé.</p>
+    <div class="stepRow"><label>CASIERS REÇUS</label>
+      <div class="stepper"><button onclick="step('c',-1)" aria-label="Moins">−</button><span class="v">${pick.c}</span><button onclick="step('c',1)" aria-label="Plus">+</button></div><span></span></div>
+    <div class="stepRow"><label>BOUTEILLES REÇUES</label>
+      <div class="stepper"><button onclick="step('b',-1)" aria-label="Moins">−</button><span class="v">${pick.b}</span><button onclick="step('b',1)" aria-label="Plus">+</button></div><span></span></div>
+    <div class="stepRow"><label>PRIX D'ACHAT PAR CASIER (F)</label><input class="amtInput" id="buyIn" inputmode="numeric" value="${pick.buyC}" oninput="pick.buyC=+this.value||0;renderTotal()"><span></span></div>
+    <div class="total" style="padding-top:0"><span>Montant de la ligne</span><b id="lt">${F(lineAmt({c:pick.c,b:pick.b,buyC:pick.buyC,pid:pick.pid}))}</b></div>
+    <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="padKey(${n})">${n}</button>`).join('')}<button class="g" onclick="padKey('C')">Effacer</button><button onclick="padKey(0)">0</button><button class="g" onclick="padKey('⌫')">⌫</button></div>
+    <button class="btn btn-lime" onclick="confirmLine()">Ajouter au brouillon</button>
+    <button class="btn btn-ghost" onclick="closeEntry()">Annuler</button></div>`;
+}
+function renderTotal(){ const el=document.getElementById('lt'); if(el) el.textContent=F(lineAmt({c:pick.c,b:pick.b,buyC:pick.buyC,pid:pick.pid})); }
+function step(k,d){ pick[k]=Math.max(0,pick[k]+d); if(k==='b' && pick.b>=pidx(pick.pid).bpc){ toast(`Au-delà de ${pidx(pick.pid).bpc} bouteilles : comptez en casiers`); pick.b=pidx(pick.pid).bpc-1; } renderEntry(); }
+function padKey(k){
+  const cur=String(pick.b); // le pavé saisit les bouteilles
+  if(k==='C'){ pick.b=0; }
+  else if(k==='⌫'){ pick.b=Math.floor(pick.b/10); }
+  else { const v=pick.b*10+k; if(v>=pidx(pick.pid).bpc){ toast(`Au-delà de ${pidx(pick.pid).bpc} bouteilles : comptez en casiers`); return; } pick.b=v; }
+  renderEntry();
+}
+function confirmLine(){
+  if(pick.c===0 && pick.b===0){ toast('Saisissez au moins une quantité'); return; }
+  if(!pick.buyC){ toast("Le prix d'achat par casier est obligatoire"); return; }
+  const i=draft.findIndex(x=>x.id===pick.pid);
+  const line={id:pick.pid,c:pick.c,b:pick.b,buyC:pick.buyC};
+  if(i>=0) draft[i]=line; else draft.push(line);
+  closeEntry(); toast('Ligne ajoutée au brouillon'); render();
+}
+function closeEntry(){ document.getElementById('ov').classList.add('hide'); pick=null; }
+
+// Récapitulatif avant validation
+function openRecap(){
+  const total=draft.reduce((a,l)=>a+lineAmt(l),0);
+  const rows=draft.map(l=>{ const p=pidx(l.id); return `<div class="line"><div class="nm">${p.name}<small>${fmtQ(l.c,l.b)} · ${qtyB(l)} bouteilles</small></div><div class="amt">${F(lineAmt(l))}</div></div>`; }).join('');
+  const ov=document.getElementById('ov'); ov.classList.remove('hide');
+  ov.innerHTML=`<div class="sheet">
+    <div class="warn">Vérifiez correctement la liste du ravitaillement. Une fois validée, elle n'est plus modifiable et sera prise en compte dans l'inventaire.</div>
+    <h3>Récapitulatif</h3><p>29/10/2026 · 10 h 52 · Rachelle</p>
+    <div class="card" style="padding:4px 14px">${rows}<div class="total"><span>Total général</span><b>${F(total)}</b></div></div>
+    <label class="check"><input type="checkbox" id="chk" onchange="document.getElementById('valBtn').disabled=!this.checked"><span>J'ai vérifié la liste</span></label>
+    <button class="btn btn-forest" id="valBtn" disabled onclick="validateRav()">Valider définitivement</button>
+    <button class="btn btn-ghost" onclick="closeRecap()">Modifier</button></div>`;
+}
+function closeRecap(){ document.getElementById('ov').classList.add('hide'); }
+function validateRav(){
+  const id='R'+(RAVIT.length+1);
+  draft.forEach(l=>{ const p=pidx(l.id); p.stock += qtyB(l); p.buyC=l.buyC; });
+  RAVIT.unshift({id,h:'10 h 52',who:'Rachelle',locked:true,lines:draft.map(l=>({...l})),corr:[]});
+  draft=[]; closeRecap(); toast('Ravitaillement validé. Le stock est mis à jour.'); render();
+}
+
+// ---------- Liste du jour, corrections et lecture ----------
+function listView(){
+  const dayLabel=DAYS[dayIdx][0];
+  const sel=`<div style="display:flex;gap:8px;margin-bottom:10px;overflow-x:auto">${DAYS.map((d,i)=>`<button class="tile" style="flex:none;padding:8px 14px;width:auto;font-weight:700;font-size:13px;${i===dayIdx?'background:var(--forest);color:var(--lime)':''}" onclick="dayIdx=${i};render()">${d[1]}</button>`).join('')}</div>`;
+  const cards = RAVIT.map(r=>{
+    const lines = r.lines.map(l=>`<div class="line"><div class="nm">${pidx(l.pid).name}<small>${fmtQ(l.c,l.b)}</small></div><div class="qty">${qtyB(l)} b.</div></div>`).join('');
+    const corrs = r.corr.map(c=>`<div class="corr"><b>Correction</b> · ${c.h} · ${pidx(c.pid).name} : ${c.delta>0?'+':''}${c.delta} bouteilles<br><span style="color:var(--muted)">Motif : ${c.motif}</span></div>`).join('');
+    const total = r.lines.reduce((a,l)=>a+lineAmt(l),0) + r.corr.reduce((a,c)=>a+c.delta*c.unit,0);
+    return `<div class="rav"><div class="rav-h"><div><b>${r.h} · ${r.who}</b><small>Ravitaillement validé</small></div><span class="lock">${ico(ICO.lock,12)}Verrouillé</span></div>
+      ${lines}${corrs}
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><button class="x" style="width:auto;font-size:13px;color:var(--mid);font-weight:600" onclick="openCorr('${r.id}')">Proposer une correction</button><b class="mono" style="font-size:14px">${F(total)}</b></div></div>`;
+  }).join('') || '<div class="empty">Aucun ravitaillement validé aujourd\'hui.</div>';
+  const day = RAVIT.reduce((a,r)=>a+r.lines.reduce((x,l)=>x+lineAmt(l),0)+r.corr.reduce((x,c)=>x+c.delta*c.unit,0),0);
+  return `${sel}<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Journée commerciale en cours</div>
+    ${cards}
+    <div class="total"><span>Total du jour</span><b>${F(day)}</b></div>
+    <button class="btn btn-wa" onclick="toast('Envoi WhatsApp au propriétaire : message pré-écrit')">${ico(ICO.wa,16)} Envoyer par WhatsApp</button>
+    <button class="btn btn-ghost" onclick="toast('PDF : Ravitaillement_ChezMamaAfrica_2026-10-29.pdf')">${ico(ICO.pdf,16)} Télécharger en PDF</button>`;
+}
+
+// Correction : écriture distincte, motif obligatoire, origine intacte
+function openCorr(rid){
+  pick={rid, delta:1, motif:''}; const ov=document.getElementById('ov'); ov.classList.remove('hide');
+  const r=RAVIT.find(x=>x.id===rid);
+  ov.innerHTML=`<div class="sheet"><h3>Proposer une correction</h3>
+    <p>La ligne d'origine ne change pas. La correction s'ajoute sous la mention « Correction ». Le propriétaire sera alerté.</p>
+    <div class="stepRow"><label>BOISSON</label><select class="amtInput" id="cp">${r.lines.map(l=>`<option value="${l.pid}">${pidx(l.pid).name}</option>`).join('')}</select><span></span></div>
+    <div class="stepRow"><label>BOUTEILLES (+ en plus, − en moins)</label>
+      <div class="stepper"><button onclick="cStep(-1)">−</button><span class="v">${pick.delta>0?'+':''}${pick.delta}</span><button onclick="cStep(1)">+</button></div><span></span></div>
+    <div class="stepRow"><label>MOTIF (OBLIGATOIRE)</label><textarea class="reason" id="cm" placeholder="Ex. erreur de saisie, casier compté deux fois">${pick.motif}</textarea><span></span></div>
+    <button class="btn btn-lime" onclick="saveCorr('${rid}')">Enregistrer la correction</button>
+    <button class="btn btn-ghost" onclick="closeEntry()">Annuler</button></div>`;
+}
+function cStep(d){ pick.delta += d; if(pick.delta===0) pick.delta=d; openCorrKeep(); }
+function openCorrKeep(){ const m=document.getElementById('cm'); if(m) pick.motif=m.value; openCorr(pick.rid); }
+function saveCorr(rid){
+  const motif=document.getElementById('cm').value.trim();
+  if(!motif){ toast('Le motif est obligatoire'); return; }
+  const pid=document.getElementById('cp').value; const p=pidx(pid);
+  const delta=pick.delta;
+  const unit = Math.round(p.buyC/p.bpc);
+  const r=RAVIT.find(x=>x.id===rid);
+  r.corr.push({id:'C'+(r.corr.length+1),h:'10 h 55',pid,delta,motif,unit});
+  p.stock += delta;
+  closeEntry(); toast('Correction enregistrée. Le propriétaire sera alerté.'); render();
+}
+
+render();
+</script>
+</body>
+</html>

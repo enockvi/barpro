@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BarPro — Maquette des interfaces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--lime-soft:#D9FBC8;--amber:#FDF0CF;--coral:#FFE1DD;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1100px;margin:0 auto;padding:56px 32px 80px}
+header{background:var(--forest);color:var(--white);border-radius:28px;padding:40px 40px 36px;margin-bottom:40px;position:relative;overflow:hidden}
+header .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--lime);font-weight:700;margin-bottom:12px}
+header h1{font-size:44px;line-height:48px;font-weight:800;letter-spacing:-.035em}
+header h1 span{color:var(--lime)}
+header p{color:rgba(255,255,255,.75);margin-top:12px;max-width:640px;font-size:16px}
+header .mark{position:absolute;right:40px;top:40px;width:72px;height:72px}
+.stats{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+.stats span{background:rgba(255,255,255,.1);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+h2{font-size:24px;line-height:30px;font-weight:800;letter-spacing:-.025em;color:var(--forest-deep);margin:44px 0 6px}
+.sub{color:var(--muted);margin-bottom:18px;font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--white);border-radius:22px;padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:8px;transition:transform .2s}
+a.card:hover{transform:translateY(-2px)}
+.card .top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card .id{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.card h3{font-size:17px;line-height:22px;font-weight:700;letter-spacing:-.01em;color:var(--forest-deep)}
+.card p{font-size:13px;color:var(--muted);line-height:19px}
+.st{font-size:11px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap}
+.ok{background:var(--lime-soft);color:var(--forest-deep)}
+.todo{background:var(--amber);color:#7A5300}
+.open{margin-top:auto;font-size:13px;font-weight:600;color:var(--mid)}
+.card.off{opacity:.7}
+.card.off .open{color:var(--muted)}
+table{width:100%;border-collapse:collapse;background:var(--white);border-radius:20px;overflow:hidden;box-shadow:var(--shadow);font-size:14px}
+th{text-align:left;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;padding:14px 18px;border-bottom:1px solid var(--line)}
+td{padding:14px 18px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border:0}
+td.ok2{color:var(--forest-deep);font-weight:700;white-space:nowrap}
+td.no{color:#9A2A1E;font-weight:700;white-space:nowrap}
+td.n{color:var(--muted);font-size:13px}
+.note{margin-top:14px;font-size:13px;color:var(--muted);line-height:20px}
+footer{margin-top:56px;color:var(--muted);font-size:13px}
+@media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.wrap{padding:32px 20px}header h1{font-size:34px;line-height:38px}}
+@media (max-width:600px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <svg class="mark" viewBox="0 0 200 200" aria-hidden="true"><rect width="200" height="200" rx="46" fill="#8BFA5A"/><path fill="#0B3322" d="M64 23 H88.5 V60 C88.5 66 106.6 74 106.6 92 V157 Q106.6 169 94.6 169 H58 Q46 169 46 157 V92 C46 74 64 66 64 60 Z"/><path fill="#8BFA5A" stroke="#8BFA5A" stroke-width="7" stroke-linejoin="round" d="M84 92 H160 L152.6 160 Q151.6 169 142 169 H104 Q94.5 169 95.5 160 Z"/><path fill="#0B3322" d="M84 92 H160 L152.6 160 Q151.6 169 142 169 H104 Q94.5 169 95.5 160 Z"/></svg>
+  <div class="eyebrow">Maquette · Octobre 2026</div>
+  <h1>Bar<span>Pro</span> · interfaces</h1>
+  <p>Toutes les interfaces prototypées de BarPro, avec des données d'exemple identiques : Buvette Chez Mama Africa, Cotonou. Chaque écran est cliquable.</p>
+  <div class="stats"><span>3 applications</span><span>Console PDG, App Propriétaire, App Gérant</span><span>Charte graphique Forêt et Citron</span></div>
+</header>
+
+<h2>Console BarPro</h2>
+<p class="sub">Application web desktop réservée au PDG.</p>
+<div class="grid">
+  <a class="card" href="console-barpro-bars.html"><div class="top"><span class="id">A1</span><span class="st ok">Construit</span></div><h3>Connexion, bars et fiche</h3><p>Connexion à deux étapes, liste des bars avec statuts, création avec lien WhatsApp, fiche d'un bar et actions sensibles confirmées.</p><span class="open">Ouvrir →</span></a>
+  <div class="card off"><div class="top"><span class="id">A2</span><span class="st todo">À construire</span></div><h3>Codes, journal et paramètres</h3><p>Génération de codes d'abonnement, suivi des codes, journal non modifiable, paramètres de l'essai et mode démo.</p><span class="open">Prochaine étape</span></div>
+</div>
+
+<h2>App Propriétaire</h2>
+<p class="sub">Application téléphone 390 × 844, en consultation et contrôle. Aucune vente.</p>
+<div class="grid">
+  <a class="card" href="proprietaire-acces.html"><div class="top"><span class="id">P1</span><span class="st ok">Construit</span></div><h3>Accès, essai, codes et PIN</h3><p>Lien WhatsApp, installation, code de liaison, session gratuite, code d'abonnement, PIN facultatif, états du bar.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="proprietaire-accueil.html"><div class="top"><span class="id">P2</span><span class="st ok">Construit</span></div><h3>Accueil et alertes</h3><p>Chiffre d'affaires, bénéfice brut et casse séparés, alertes avec liens, ravitaillement du jour, vue consolidée.</p><span class="open">Ouvrir →</span></a>
+  <div class="card off"><div class="top"><span class="id">P3</span><span class="st todo">À construire</span></div><h3>Ventes (consultation)</h3><p>Cartes journalières et détail des tickets en lecture seule. Aucun bouton de vente, de modification ou d'annulation.</p><span class="open">Prochaine étape</span></div>
+  <a class="card" href="proprietaire-stock.html"><div class="top"><span class="id">P4</span><span class="st ok">Construit</span></div><h3>Stock, pénurie et produits</h3><p>Stock par boisson, fiches avec marge et bénéfice brut, pénurie, ravitaillements verrouillés, prix en consultation.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="proprietaire-inventaire.html"><div class="top"><span class="id">P5</span><span class="st ok">Construit</span></div><h3>Inventaire et rapports</h3><p>Comptage en aveugle, rapports en bouteilles et financier, message vocal, PDF et historique.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="proprietaire-statistiques.html"><div class="top"><span class="id">P6</span><span class="st ok">Construit</span></div><h3>Statistiques</h3><p>Chiffre d'affaires, bénéfice brut, classement, courbes SVG, casse séparée, export PDF.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="proprietaire-profil.html"><div class="top"><span class="id">P7</span><span class="st ok">Construit</span></div><h3>Profil, gérant, annexes et journal</h3><p>Informations du bar, changement de gérant en deux cas, appareils, abonnement, annexes, journal d'audit, sécurité.</p><span class="open">Ouvrir →</span></a>
+</div>
+
+<h2>App Gérant</h2>
+<p class="sub">Outil de travail sur téléphone, pensé pour un usage debout. Aucune donnée de bénéfice, de marge ou de valeur de casse.</p>
+<div class="grid">
+  <a class="card" href="gerant-acces.html"><div class="top"><span class="id">G1</span><span class="st ok">Construit</span></div><h3>Accès et états</h3><p>Lien sans mot de passe, introduction, installation, lien refusé, lecture seule, suspension, passation.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="gerant-vente.html"><div class="top"><span class="id">G2</span><span class="st ok">Construit</span></div><h3>Vente (POS)</h3><p>Grille, panier, promos « 3 pour 1 000 F », stock et états, ticket, annulation de la dernière vente.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="gerant-tickets.html"><div class="top"><span class="id">G3</span><span class="st ok">Construit</span></div><h3>Tickets du jour</h3><p>Liste, détail, modification pendant 1 heure, versions conservées, verrouillage après 1 heure.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="gerant-stock.html"><div class="top"><span class="id">G4</span><span class="st ok">Construit</span></div><h3>Stock, pénurie et fiches</h3><p>Stock par boisson, fiche détail, pénurie avec partage, fiche produit modifiable, changement de prix confirmé.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="gerant-ravitaillement.html"><div class="top"><span class="id">G5</span><span class="st ok">Construit</span></div><h3>Ravitaillement</h3><p>Brouillon, récapitulatif, validation définitive, corrections signalées, liste du jour.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="gerant-casse.html"><div class="top"><span class="id">G6</span><span class="st ok">Construit</span></div><h3>Déclaration de casse</h3><p>Motifs, photo facultative, confirmation, aucune annulation possible, liste sans montant.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="gerant-inventaire.html"><div class="top"><span class="id">G7</span><span class="st ok">Construit</span></div><h3>Inventaire en aveugle</h3><p>Comptage sans stock théorique, validation horodatée, message final, passation.</p><span class="open">Ouvrir →</span></a>
+  <a class="card" href="gerant-statistiques.html"><div class="top"><span class="id">G8</span><span class="st ok">Construit</span></div><h3>Statistiques</h3><p>Bouteilles vendues par mois ou par année, classement. Sans chiffre d'affaires par boisson ni export PDF.</p><span class="open">Ouvrir →</span></a>
+</div>
+
+<h2>Couverture des fonctions</h2>
+<p class="sub">Vérification des fonctions prévues par les prompts. Les numéros de section du cahier des charges V4 ne figurent pas dans le document fourni : cette liste reprend les écrans prévus.</p>
+<table>
+  <thead><tr><th>Fonction</th><th>Fichier</th><th>État</th></tr></thead>
+  <tbody>
+    <tr><td>Connexion à deux étapes (console)</td><td class="n">console-barpro-bars.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Liste et création des bars, lien WhatsApp</td><td class="n">console-barpro-bars.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Fiche bar : renvoi, suspension, prolongation, numéro</td><td class="n">console-barpro-bars.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Codes d'abonnement, journal, paramètres</td><td class="n">console-barpro-codes.html</td><td class="no">Non</td></tr>
+    <tr><td>Accès propriétaire, essai, PIN, états</td><td class="n">proprietaire-acces.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Accueil, alertes, multi-bars</td><td class="n">proprietaire-accueil.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Ventes en consultation</td><td class="n">proprietaire-ventes.html</td><td class="no">Non</td></tr>
+    <tr><td>Stock, pénurie, ravitaillements, produits</td><td class="n">proprietaire-stock.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Inventaire, rapports, message vocal</td><td class="n">proprietaire-inventaire.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Statistiques et export PDF</td><td class="n">proprietaire-statistiques.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Profil, gérant, annexes, journal d'audit</td><td class="n">proprietaire-profil.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Accès gérant, états, passation</td><td class="n">gerant-acces.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Vente, promos, panier, annulation</td><td class="n">gerant-vente.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Tickets, modification 1 heure</td><td class="n">gerant-tickets.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Stock, fiches produit, pénurie</td><td class="n">gerant-stock.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Ravitaillement, validation, corrections</td><td class="n">gerant-ravitaillement.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Déclaration de casse</td><td class="n">gerant-casse.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Inventaire en aveugle, passation</td><td class="n">gerant-inventaire.html</td><td class="ok2">Oui</td></tr>
+    <tr><td>Statistiques du gérant, quantités seules</td><td class="n">gerant-statistiques.html</td><td class="ok2">Oui</td></tr>
+  </tbody>
+</table>
+<p class="note">Deux fichiers restent à construire : <b>console-barpro-codes.html</b> (A2) et <b>proprietaire-ventes.html</b> (P3, consultation uniquement). Les chiffres de la journée (72 500 F de ravitaillement dans l'accueil et le stock propriétaire) restent à aligner sur le détail du ravitaillement gérant.</p>
+
+<footer>BarPro · maquette des interfaces · données d'exemple identiques dans tous les fichiers.</footer>
+</div>
+</body>
+</html>

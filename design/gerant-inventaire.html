@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Gérant — Inventaire en aveugle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit;cursor:pointer}
+input{cursor:text}
+.hide{display:none!important}
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;outline:none}
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.top{padding:4px 18px 10px}
+.top h1{font-size:26px;line-height:32px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.top p{font-size:13px;color:var(--muted)}
+.subtabs{display:flex;background:var(--white);border-radius:999px;padding:4px;box-shadow:var(--shadow);margin:0 18px 10px}
+.subtabs button{flex:1;height:36px;border:0;background:none;border-radius:999px;font-weight:600;font-size:13px;color:var(--muted)}
+.subtabs button.on{background:var(--forest);color:var(--lime)}
+.body{flex:1;display:flex;flex-direction:column;min-height:0;position:relative}
+.scroll{flex:1;overflow-y:auto;padding:0 18px 28px}
+.notice{border-radius:18px;padding:14px 16px;font-size:14px;line-height:20px;margin-bottom:12px}
+.n-warn{background:#FDF0CF;color:#7A5300;font-weight:600}
+.n-info{background:#E3EEFF;color:#1B4D9B}
+.n-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.progress{position:sticky;top:0;background:var(--paper);padding:4px 0 10px;z-index:2}
+.bar{height:8px;background:var(--white);border-radius:999px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--line)}
+.bar div{height:100%;background:var(--lime);border-radius:999px;transition:width .3s}
+.progress small{display:block;font-size:12px;color:var(--muted);margin-top:6px}
+.band{background:var(--white);border-radius:20px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow);display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:center}
+.photo{width:52px;height:52px;border-radius:16px;display:grid;place-items:center}
+.photo svg{width:24px;height:24px;stroke:var(--forest-deep);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.band .nm{font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.band .fm{font-size:12px;color:var(--muted)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.fields label{display:block;font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.06em;margin-bottom:4px}
+.fields input{width:100%;height:44px;border-radius:14px;border:0;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);font-family:var(--mono);font-size:17px;text-align:center;outline:none}
+.fields input:focus{box-shadow:inset 0 0 0 2px var(--mid),0 0 0 4px rgba(139,250,90,.35)}
+.ok{font-size:11px;font-weight:700;background:var(--lime-soft);color:var(--forest-deep);padding:2px 8px;border-radius:999px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:999px;border:0;font-weight:700;font-size:15px;margin-top:10px}
+.btn-lime{background:var(--lime);color:var(--forest-deep)}
+.btn-forest{background:var(--forest);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--forest-deep);box-shadow:inset 0 0 0 1.5px var(--forest-deep)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.card{background:var(--white);border-radius:20px;box-shadow:var(--shadow);padding:14px 16px;margin-bottom:12px}
+.card b{display:block;font-size:16px;margin-bottom:4px}
+.card p{font-size:14px;color:var(--muted);line-height:20px}
+.line{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.line:last-child{border:0}
+.line b{font-family:var(--mono);white-space:nowrap}
+.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);font-weight:700;margin:14px 2px 8px}
+.hist{background:var(--white);border-radius:18px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.hist b{display:block;font-size:14px}
+.hist small{font-size:12px;color:var(--muted)}
+.conf{position:absolute;inset:0;background:rgba(6,35,26,.45);display:flex;align-items:flex-end;z-index:20}
+.confcard{background:var(--paper);border-radius:28px 28px 0 0;padding:22px 20px 28px;width:100%}
+.confcard h3{font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--forest-deep);margin-bottom:6px}
+.confcard p{color:var(--muted);font-size:14px;margin-bottom:10px}
+.done{text-align:center;padding:36px 14px}
+.done .ok2{width:72px;height:72px;border-radius:50%;background:var(--lime-soft);display:grid;place-items:center;margin:0 auto 16px}
+.done .ok2 svg{width:32px;height:32px;stroke:var(--forest-deep);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.done h2{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--forest-deep);margin-bottom:8px}
+.done p{color:var(--muted);font-size:15px}
+.toast{position:absolute;left:18px;right:18px;bottom:96px;background:var(--forest);color:var(--white);padding:12px 16px;border-radius:16px;font-size:14px;font-weight:600;text-align:center;z-index:40}
+.nav{flex:none;background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(6,1fr);padding:8px 4px 22px}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10.5px;font-weight:600;color:var(--muted);min-height:48px;padding-top:2px;position:relative}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--forest)}
+.tab.on::before{content:"";position:absolute;top:-8px;width:28px;height:3px;border-radius:999px;background:var(--lime)}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label for="scenario">Scénario</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="normal">Inventaire prêt à démarrer</option>
+    <option value="draft">Ravitaillement en brouillon : refus</option>
+    <option value="passation">Inventaire de passation demandé</option>
+  </select>
+</div>
+
+<div class="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="top"><h1>Inventaire</h1><p id="sub">Comptage en aveugle</p></div>
+  <div class="subtabs" id="subtabs"></div>
+  <div class="body">
+    <div class="scroll" id="pane"></div>
+    <div class="conf hide" id="conf"></div>
+    <div class="toast hide" id="toast"></div>
+  </div>
+  <nav class="nav" id="nav"></nav>
+</div>
+
+<script>
+// Stock théorique : jamais affiché au gérant pendant le comptage. Seules les quantités comptées sont saisies.
+const P=[
+ {id:'castel',name:'Castel 65 cl',fmt:'65 cl · 12 par casier',bpc:12,tile:'#FCE7B0'},
+ {id:'beaufort',name:'Beaufort 65 cl',fmt:'65 cl · 12 par casier',bpc:12,tile:'#E8D3B5'},
+ {id:'benin',name:'La Béninoise 65 cl',fmt:'65 cl · 12 par casier',bpc:12,tile:'#F7D9C4'},
+ {id:'heineken',name:'Heineken 33 cl',fmt:'33 cl · 24 par casier',bpc:24,tile:'#CDEBD0'},
+ {id:'coca',name:'Coca-Cola 33 cl',fmt:'33 cl · 24 par casier',bpc:24,tile:'#F9C9C0'},
+ {id:'fanta',name:'Fanta 33 cl',fmt:'33 cl · 24 par casier',bpc:24,tile:'#FFD9A8'},
+ {id:'sprite',name:'Sprite 33 cl',fmt:'33 cl · 24 par casier',bpc:24,tile:'#D5F0C8'},
+ {id:'ananas',name:'Top Ananas 33 cl',fmt:'33 cl · 24 par casier',bpc:24,tile:'#FCEBB0'},
+ {id:'pos50',name:'Possotomè 50 cl',fmt:'50 cl · 12 par casier',bpc:12,tile:'#D3E8F7'},
+ {id:'pos15',name:'Possotomè 1,5 L',fmt:'1,5 L · 6 par casier',bpc:6,tile:'#CFE6F5'},
+ {id:'cris50',name:'Cristal 50 cl',fmt:'50 cl · 12 par casier',bpc:12,tile:'#DDEEF9'},
+ {id:'cris15',name:'Cristal 1,5 L',fmt:'1,5 L · 6 par casier',bpc:6,tile:'#C8E2F4'}
+];
+// Historique limité aux listes de stock compté (pas d'écart, pas de montant)
+let HIST=[
+ {d:'21/10/2026 · 20 h 45',pdf:'Stock_compte_ChezMamaAfrica_2026-10-21_2045.pdf'},
+ {d:'14/10/2026 · 21 h 05',pdf:'Stock_compte_ChezMamaAfrica_2026-10-14_2105.pdf'}
+];
+let sc='normal', sub='inv', draft=null, validated=false, toastT, done=false;
+const ICO={box:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>', ok:'<path d="M5 12l5 5L20 7"/>', info:'<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>', warn:'<path d="M12 8v5M12 17h.01"/><path d="M10.3 3.9L2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>', pdf:'<path d="M6 3h9l4 4v14H6z"/><path d="M9 12h6M9 16h6"/>'};
+const ico=(p,w=18)=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.remove('hide'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.add('hide'),2600); }
+
+function setScenario(v){ sc=v; draft=null; validated=false; done=false; sub='inv'; render(); }
+function setSub(s){ sub=s; render(); }
+
+function renderSubs(){
+  const T=[['inv','Comptage'],['hist','Historique']];
+  document.getElementById('subtabs').innerHTML=T.map(([k,l])=>`<button class="${sub===k?'on':''}" onclick="setSub('${k}')">${l}</button>`).join('');
+}
+function renderNav(){
+  const T=[['Vente','M6 3h12v18l-3-2-3 2-3-2-3 2z'],['Stock','M3 4h18v5H3zM5 9v10h14V9'],['Pénurie','M12 8v5M12 17h.01M10 3h4l8 17H2z'],['Ravitaill.','M3 7h13v10H3zM16 10h3l2 3v4h-5'],['Inventaire','M9 5h10M9 12h10M9 19h10'],['Stats','M4 20V10M10 20V4M16 20v-7M22 20H2']];
+  document.getElementById('nav').innerHTML=T.map(([l,d],i)=>`<button class="tab ${i===4?'on':''}" onclick="toast('${l} : écran du fichier suivant')"><svg viewBox="0 0 24 24"><path d="${d}"/></svg>${l}</button>`).join('');
+}
+function render(){
+  renderSubs(); renderNav();
+  const pane=document.getElementById('pane');
+  if(sub==='hist'){ pane.innerHTML=histView(); return; }
+  if(done){ pane.innerHTML=doneView(); return; }
+  // Refus si un ravitaillement est en brouillon
+  if(sc==='draft'){ pane.innerHTML=`<div class="notice n-warn">Validez ou supprimez le ravitaillement en cours.</div>
+    <div class="card"><b>Ravitaillement en brouillon</b><p>Le brouillon doit être validé ou supprimé avant de démarrer un inventaire.</p></div>
+    <button class="btn btn-lime" onclick="toast('Ouverture du ravitaillement (G5)')">Ouvrir le ravitaillement</button>`; return; }
+  if(!draft){ pane.innerHTML=startView(); return; }
+  pane.innerHTML=countView();
+}
+function startView(){
+  const banner = sc==='passation' ? `<div class="notice n-warn">Inventaire de passation demandé. Le propriétaire a déclaré un changement de gérant : faites cet inventaire avant de vendre.</div>` : '';
+  return `${banner}<div class="card"><b>Démarrer un inventaire</b><p>Vous comptez chaque boisson en aveugle : le stock théorique n'est pas affiché. Toutes les boissons doivent être renseignées, 0 compris.</p></div>
+    <button class="btn btn-forest" onclick="startInv()">Démarrer l'inventaire</button>`;
+}
+function startInv(){ draft={}; render(); }
+function isDone(id){ const d=draft[id]; return !!d && d.c!==undefined && d.b!==undefined; }
+function counted(){ return P.filter(p=>isDone(p.id)).length; }
+function countView(){
+  const total=P.length, n=counted(), pct=Math.round(n/total*100);
+  const rows=P.map(p=>{ const d=draft[p.id]||{}; const c=d.c===undefined?'':d.c, b=d.b===undefined?'':d.b;
+    return `<div class="band"><span class="photo" style="background:${p.tile}">${ico(ICO.box,24)}</span>
+      <div><div class="nm">${p.name}${isDone(p.id)?'<span class="ok">Compté</span>':''}</div><div class="fm">${p.fmt}</div>
+        <div class="fields"><div><label>CASIERS</label><input type="number" min="0" inputmode="numeric" value="${c}" onchange="setQ('${p.id}','c',this.value)"></div>
+        <div><label>BOUTEILLES</label><input type="number" min="0" inputmode="numeric" value="${b}" onchange="setQ('${p.id}','b',this.value)"></div></div></div></div>`; }).join('');
+  return `<div class="progress"><div class="bar"><div style="width:${pct}%"></div></div><small>${n} sur ${total} boissons comptées. Chaque boisson doit être renseignée, 0 compris.</small></div>
+    ${rows}
+    <button class="btn btn-lime" ${n===total?'':'disabled'} onclick="openRecap()">Voir le récapitulatif</button>
+    <button class="btn btn-ghost" onclick="toast('Brouillon enregistré')">Enregistrer le brouillon</button>`;
+}
+function setQ(id,k,v){
+  const p=P.find(x=>x.id===id);
+  const cur = draft[id] || {};
+  if(v===''){ draft[id]={...cur,[k]:undefined}; render(); return; }
+  let val=Math.max(0, parseInt(v,10)||0);
+  if(k==='b' && val>=p.bpc){ toast(`Au-delà de ${p.bpc} bouteilles : comptez en casiers`); val=p.bpc-1; }
+  draft[id]={...cur,[k]:val};
+  render();
+}
+function openRecap(){
+  const rows=P.map(p=>{ const d=draft[p.id]; return `<div class="line"><span>${p.name}</span><b>${d.c} c. + ${d.b} b.</b></div>`; }).join('');
+  const c=document.getElementById('conf'); c.classList.remove('hide');
+  c.innerHTML=`<div class="confcard"><h3>Récapitulatif du comptage</h3><p>Vérifiez les quantités comptées avant de valider.</p>
+    <div class="card" style="padding:4px 14px;max-height:260px;overflow:auto">${rows}</div>
+    <button class="btn btn-forest" onclick="confirmVal()">Valider définitivement</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('conf').classList.add('hide')">Modifier</button></div>`;
+}
+function confirmVal(){
+  const c=document.getElementById('conf');
+  c.innerHTML=`<div class="confcard"><h3>Valider définitivement ?</h3><p>L'inventaire est horodaté et ne pourra plus être modifié. Il sera envoyé au propriétaire.</p>
+    <button class="btn btn-forest" onclick="finalize()">Oui, valider</button>
+    <button class="btn btn-ghost" onclick="document.getElementById('conf').classList.add('hide')">Retour</button></div>`;
+}
+function finalize(){
+  validated=true; document.getElementById('conf').classList.add('hide');
+  HIST.unshift({d:'29/10/2026 · 10 h 58',pdf:'Stock_compte_ChezMamaAfrica_2026-10-29_1058.pdf'});
+  done=true; render();
+}
+// Fin : seulement ce message, sans écart, montant ni audio
+function doneView(){
+  return `<div class="done"><div class="ok2">${ico(ICO.ok,32)}</div><h2>Inventaire enregistré.</h2><p>Le propriétaire a été informé.</p></div>
+    <button class="btn btn-forest" onclick="downloadList()">${ico(ICO.pdf,16)} Télécharger la liste du stock compté</button>
+    <button class="btn btn-lime" onclick="backToPos()">Retour à la vente</button>`;
+}
+function downloadList(){ toast('PDF : Stock_compte_ChezMamaAfrica_2026-10-29_1058.pdf'); }
+function backToPos(){ toast('Retour à l\'écran Vente'); draft=null; validated=false; done=false; render(); }
+function histView(){
+  return HIST.map(h=>`<div class="hist"><div><b>${h.d}</b><small>Liste du stock compté, sans écart</small></div><button class="btn btn-ghost" style="width:auto;min-height:38px;margin:0;padding:0 14px;font-size:13px" onclick="toast('PDF : ${h.pdf}')">PDF</button></div>`).join('')
+    + `<div class="notice n-info" style="margin-top:8px">Cet historique ne présente que les listes de stock compté.</div>`;
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Console BarPro — Bars</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+.hide{display:none!important}
+/* Connexion */
+#login{min-height:100vh;display:grid;place-items:center;background:var(--forest);padding:24px}
+.login-card{background:var(--white);border-radius:24px;padding:40px;width:100%;max-width:420px;box-shadow:var(--shadow)}
+.login-card .mark{width:56px;height:56px;margin-bottom:24px}
+.login-card h1{font-size:26px;line-height:32px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.login-card p{color:var(--muted);margin:8px 0 24px}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:8px;color:var(--forest-deep)}
+.input{width:100%;height:52px;border-radius:14px;border:0;background:var(--paper);box-shadow:inset 0 0 0 1px var(--line);padding:0 16px;font-size:16px;outline:none}
+.input:focus{box-shadow:inset 0 0 0 2px var(--mid),0 0 0 4px rgba(139,250,90,.35)}
+.input.mono{font-family:var(--mono);letter-spacing:.3em;text-align:center;font-size:20px}
+.strength{display:flex;gap:6px;margin-top:10px}
+.strength i{flex:1;height:6px;border-radius:999px;background:var(--line)}
+.strength-label{font-size:13px;color:var(--muted);margin-top:6px}
+.err{color:#9A2A1E;background:#FFE1DD;border-radius:14px;padding:12px 14px;font-size:14px;margin-bottom:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:48px;padding:0 22px;border-radius:999px;border:0;font-weight:600;font-size:15px;min-width:48px;transition:transform .2s,background .2s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--lime);color:var(--forest-deep)}
+.btn-primary:hover{background:#7CF04B}
+.btn-dark{background:var(--forest);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--forest-deep);box-shadow:inset 0 0 0 1.5px var(--forest-deep)}
+.btn-danger{background:#FFE1DD;color:#9A2A1E}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-block{width:100%}
+.btn-sm{height:36px;padding:0 14px;font-size:13px}
+.link{background:none;border:0;color:var(--mid);font-weight:600;padding:8px 0}
+/* Shell */
+#app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+aside{background:var(--forest);color:var(--white);padding:24px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 12px 24px}
+.brand svg{width:40px;height:40px}
+.brand strong{font-size:20px;font-weight:800;letter-spacing:-.03em}
+.brand strong b{color:var(--lime)}
+.brand small{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.6;font-weight:500}
+.nav a{display:flex;align-items:center;gap:12px;height:44px;padding:0 12px;border-radius:12px;color:rgba(255,255,255,.72);text-decoration:none;font-weight:500}
+.nav a.on{background:rgba(139,250,90,.14);color:var(--lime)}
+.nav a:hover{color:var(--white)}
+.nav svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.side-foot{margin-top:auto;padding:12px;font-size:13px;color:rgba(255,255,255,.6)}
+.side-foot button{margin-top:10px;background:none;border:0;color:var(--lime);font-weight:600;padding:0}
+main{padding:40px 48px;max-width:1280px;width:100%}
+h1.page{font-size:34px;line-height:40px;font-weight:800;letter-spacing:-.035em;color:var(--forest-deep)}
+.sub{color:var(--muted);margin-top:6px}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:28px;flex-wrap:wrap}
+.counters{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:24px}
+.counter{background:var(--white);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow);cursor:pointer;border:2px solid transparent;text-align:left}
+.counter.on{border-color:var(--forest)}
+.counter b{display:block;font-size:26px;line-height:30px;font-weight:800;letter-spacing:-.03em}
+.counter span{font-size:12px;color:var(--muted);font-weight:600}
+.toolbar{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.search{flex:1;min-width:220px;height:44px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 18px;outline:none}
+.select{height:44px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;outline:none}
+.card{background:var(--white);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:16px 20px;border-bottom:1px solid var(--line)}
+td{padding:16px 20px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover{background:var(--paper)}
+.name b{display:block;font-weight:700}
+.name small{color:var(--muted);font-size:13px}
+.mono{font-family:var(--mono);font-size:13px}
+.badge{display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap}
+.badge svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.b-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.b-trial{background:#E3EEFF;color:#1B4D9B}
+.b-soon{background:#FDF0CF;color:#7A5300}
+.b-exp{background:#FFE1DD;color:#9A2A1E}
+.b-sus{background:var(--forest);color:var(--lime)}
+.b-link{background:var(--paper);color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+.type{font-size:13px;color:var(--muted)}
+.empty{padding:48px;text-align:center;color:var(--muted)}
+/* Panneau */
+.scrim{position:fixed;inset:0;background:rgba(6,35,26,.4);display:flex;justify-content:flex-end;z-index:50}
+.panel{width:min(480px,100%);height:100%;background:var(--paper);padding:32px;overflow:auto;box-shadow:-12px 0 40px rgba(0,0,0,.15)}
+.panel h2{font-size:24px;line-height:30px;font-weight:800;letter-spacing:-.025em;color:var(--forest-deep)}
+.panel .close{float:right;width:44px;height:44px;border-radius:50%;border:0;background:var(--white);box-shadow:var(--shadow);font-size:20px}
+.kv{background:var(--white);border-radius:20px;padding:8px 20px;margin:24px 0;box-shadow:var(--shadow)}
+.kv div{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);gap:16px}
+.kv div:last-child{border:0}
+.kv span{color:var(--muted)}
+.kv b{text-align:right}
+.actions{display:grid;gap:10px}
+.actions .btn{justify-content:flex-start}
+.section-t{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);font-weight:700;margin:24px 0 10px}
+.wa-box{background:var(--white);border-radius:20px;padding:20px;box-shadow:var(--shadow);margin-top:16px}
+.wa-box pre{white-space:pre-wrap;font-family:var(--font);font-size:14px;line-height:22px;background:var(--paper);border-radius:14px;padding:14px;margin:12px 0}
+.code{font-family:var(--mono);font-size:20px;letter-spacing:.12em;background:var(--forest);color:var(--lime);border-radius:14px;padding:14px 16px;display:inline-block;margin-top:8px}
+.modal{background:var(--white);border-radius:24px;padding:32px;width:min(440px,92vw);margin:auto;align-self:center;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+.modal h3{font-size:20px;line-height:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:10px}
+.modal p{color:var(--muted);margin-bottom:20px}
+.modal .row{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.form{display:grid;gap:4px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--forest);color:var(--white);padding:14px 20px;border-radius:999px;font-weight:600;box-shadow:var(--shadow);z-index:80}
+.bar-row{display:flex;gap:8px;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+@media (max-width:1000px){#app{grid-template-columns:1fr}aside{position:static;height:auto}.counters{grid-template-columns:repeat(3,1fr)}main{padding:24px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="mark" viewBox="0 0 200 200"><rect width="200" height="200" rx="46" fill="#8BFA5A"/><path fill="#0B3322" d="M64 23 H88.5 V60 C88.5 66 106.6 74 106.6 92 V157 Q106.6 169 94.6 169 H58 Q46 169 46 157 V92 C46 74 64 66 64 60 Z"/><path fill="#8BFA5A" stroke="#8BFA5A" stroke-width="7" stroke-linejoin="round" d="M84 92 H160 L152.6 160 Q151.6 169 142 169 H104 Q94.5 169 95.5 160 Z"/><path fill="#0B3322" d="M84 92 H160 L152.6 160 Q151.6 169 142 169 H104 Q94.5 169 95.5 160 Z"/></symbol>
+</defs></svg>
+
+<!-- CONNEXION -->
+<div id="login">
+  <div class="login-card">
+    <svg class="mark"><use href="#mark"/></svg>
+    <div id="step1">
+      <h1>Console BarPro</h1>
+      <p>Accès réservé au PDG.</p>
+      <div id="err1" class="err hide"></div>
+      <div class="field">
+        <label for="pwd">Mot de passe</label>
+        <input class="input" id="pwd" type="password" placeholder="Au moins 10 caractères" oninput="updateStrength()">
+        <div class="strength" id="strength"><i></i><i></i><i></i><i></i></div>
+        <div class="strength-label" id="strengthLabel">Saisissez votre mot de passe.</div>
+      </div>
+      <button class="btn btn-primary btn-block" id="btnPwd" disabled onclick="goOtp()">Continuer</button>
+    </div>
+    <div id="step2" class="hide">
+      <h1>Code de vérification</h1>
+      <p>Saisissez le code à 6 chiffres envoyé sur votre application d'authentification. <span class="mono">Démo : 123456</span></p>
+      <div id="err2" class="err hide"></div>
+      <div class="field"><label for="otp">Code à 6 chiffres</label><input class="input mono" id="otp" inputmode="numeric" maxlength="6" placeholder="······"></div>
+      <button class="btn btn-primary btn-block" onclick="checkOtp()">Se connecter</button>
+      <button class="link" onclick="backPwd()">Retour</button>
+    </div>
+  </div>
+</div>
+
+<!-- APPLICATION -->
+<div id="app" class="hide">
+  <aside>
+    <div class="brand"><svg><use href="#mark"/></svg><div><strong>Bar<b>Pro</b></strong><small>Console PDG</small></div></div>
+    <nav class="nav">
+      <a href="#" class="on"><svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-6h6v6"/></svg>Bars</a>
+      <a href="#" onclick="event.preventDefault();toast('Codes : fichier suivant')"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="12" rx="3"/><path d="M8 7V5h8v2"/></svg>Codes</a>
+      <a href="#" onclick="event.preventDefault();toast('Journal : fichier suivant')"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>Journal</a>
+      <a href="#" onclick="event.preventDefault();toast('Paramètres : fichier suivant')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Paramètres</a>
+    </nav>
+    <div class="side-foot">Connecté : PDG<br><button onclick="logout()">Se déconnecter</button></div>
+  </aside>
+
+  <main>
+    <div class="head">
+      <div><h1 class="page">Bars</h1><p class="sub">Suivi de tous les bars et annexes BarPro.</p></div>
+      <button class="btn btn-primary" onclick="openCreate()">+ Nouveau bar</button>
+    </div>
+
+    <div class="counters" id="counters"></div>
+
+    <div class="toolbar">
+      <input class="search" id="search" placeholder="Rechercher un bar, un propriétaire, une ville" oninput="render()">
+      <select class="select" id="filter" onchange="render()">
+        <option value="">Tous les statuts</option>
+        <option value="lien">Lien envoyé</option>
+        <option value="essai">Essai en cours</option>
+        <option value="actif">Actif</option>
+        <option value="soon">Expire bientôt</option>
+        <option value="expire">Expiré</option>
+        <option value="suspendu">Suspendu</option>
+      </select>
+      <button class="btn btn-ghost" onclick="exportCsv()">Exporter CSV</button>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead><tr><th>Bar</th><th>Type</th><th>Statut</th><th>Date de fin</th><th>Dernière activité</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty hide" id="empty">Aucun bar ne correspond à votre recherche.</div>
+    </div>
+  </main>
+</div>
+
+<!-- PANNEAU FICHE -->
+<div class="scrim hide" id="panelWrap" onclick="if(event.target===this)closePanel()"><div class="panel" id="panel"></div></div>
+<!-- MODALE -->
+<div class="scrim hide" id="modalWrap" style="align-items:center;justify-content:center"><div class="modal" id="modal"></div></div>
+<div class="toast hide" id="toast"></div>
+
+<script>
+// ---------- Données d'exemple (8 bars) ----------
+const TODAY = new Date('2026-10-29T08:00:00');
+let bars = [
+ {id:1,name:'Buvette Chez Mama Africa',loc:'Cotonou',owner:'M. Adjovi',wa:'+229 01 90 00 00 01',type:'Bar principal',status:'actif',end:'2026-12-20',last:'2026-10-29 08:10'},
+ {id:2,name:'Buvette Centre',loc:'Cotonou',owner:'M. Adjovi',wa:'+229 01 90 00 00 01',type:'Annexe',status:'actif',end:'2026-12-20',last:'2026-10-29 07:55',parent:'Buvette Chez Mama Africa'},
+ {id:3,name:'Bar Le Relais',loc:'Porto-Novo',owner:'Mme Dossou',wa:'+229 01 90 00 00 02',type:'Bar principal',status:'essai',end:'2026-11-05',last:'2026-10-28 19:40'},
+ {id:4,name:'Maquis du Port',loc:'Cotonou',owner:'M. Hounkpè',wa:'+229 01 90 00 00 03',type:'Bar principal',status:'actif',end:'2026-10-31',last:'2026-10-29 06:30'},
+ {id:5,name:'Chez Tonton',loc:'Parakou',owner:'M. Gbaguidi',wa:'+229 01 90 00 00 04',type:'Bar principal',status:'expire',end:'2026-10-10',last:'2026-10-10 23:50'},
+ {id:6,name:'Le Baobab',loc:'Abomey-Calavi',owner:'Mme Sossou',wa:'+229 01 90 00 00 05',type:'Bar principal',status:'suspendu',end:'2026-12-01',last:'2026-10-22 18:20'},
+ {id:7,name:'Bar Soleil',loc:'Ouidah',owner:'M. Agbodjè',wa:'+229 01 90 00 00 06',type:'Bar principal',status:'lien',end:'—',last:'Jamais'},
+ {id:8,name:'Snack Le Lagon',loc:'Cotonou',owner:'Mme Kpossou',wa:'+229 01 90 00 00 07',type:'Bar principal',status:'actif',end:'2027-01-15',last:'2026-10-29 07:40'}
+];
+const journal = [];
+const LABELS = {lien:'Lien envoyé',essai:'Essai en cours',actif:'Actif',soon:'Expire bientôt',expire:'Expiré',suspendu:'Suspendu'};
+const ICON = {
+ lien:'<svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+ essai:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+ actif:'<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>',
+ soon:'<svg viewBox="0 0 24 24"><path d="M12 8v5M12 17h.01"/><path d="M10.3 3.9L2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+ expire:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>',
+ suspendu:'<svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>'
+};
+const CLS = {lien:'b-link',essai:'b-trial',actif:'b-ok',soon:'b-soon',expire:'b-exp',suspendu:'b-sus'};
+
+// Statut effectif : un abonnement actif qui arrive à échéance dans 3 jours ou moins devient "expire bientôt"
+function effStatus(b){
+  if(b.status==='actif' && b.end!=='—'){
+    const days=(new Date(b.end+'T23:59:59')-TODAY)/86400000;
+    if(days<0) return 'expire';
+    if(days<=3) return 'soon';
+  }
+  return b.status;
+}
+function fmtDate(d){ if(d==='—') return '—'; const [y,m,j]=d.split('-'); return `${j}/${m}/${y}`; }
+function badge(s){ return `<span class="badge ${CLS[s]}">${ICON[s]}${LABELS[s]}</span>`; }
+
+// ---------- Connexion ----------
+function updateStrength(){
+  const v=document.getElementById('pwd').value; let score=0;
+  if(v.length>=10) score++; if(/[A-Z]/.test(v)&&/[a-z]/.test(v)) score++; if(/\d/.test(v)) score++; if(/[^A-Za-z0-9]/.test(v)) score++;
+  const colors=['#FFE1DD','#F5B841','#8BFA5A','#5EC93A'];
+  const labels=['Trop faible','Faible','Correct','Fort'];
+  const bars=document.querySelectorAll('#strength i');
+  bars.forEach((el,i)=>el.style.background = i<score ? colors[Math.max(score-1,0)] : '');
+  document.getElementById('strengthLabel').textContent = v ? 'Force : '+(score? labels[score-1]:'Trop faible') : 'Saisissez votre mot de passe.';
+  document.getElementById('btnPwd').disabled = score<4;
+  if(score<4 && v) document.getElementById('strengthLabel').textContent += ' — ajoutez majuscules, chiffres et symbole.';
+}
+function goOtp(){ document.getElementById('step1').classList.add('hide'); document.getElementById('step2').classList.remove('hide'); document.getElementById('otp').focus(); }
+function backPwd(){ document.getElementById('step2').classList.add('hide'); document.getElementById('step1').classList.remove('hide'); }
+let otpFails=0;
+function checkOtp(){
+  const code=document.getElementById('otp').value.trim();
+  const err=document.getElementById('err2');
+  if(code==='123456'){ document.getElementById('login').classList.add('hide'); document.getElementById('app').classList.remove('hide'); render(); otpFails=0; return; }
+  otpFails++;
+  err.textContent = otpFails>=5 ? 'Trop d\'erreurs. Saisie bloquée pendant 15 minutes.' : 'Code incorrect. Vérifiez le code et réessayez.';
+  err.classList.remove('hide');
+}
+function logout(){ document.getElementById('app').classList.add('hide'); document.getElementById('login').classList.remove('hide'); backPwd(); }
+
+// ---------- Liste ----------
+let activeFilter=null;
+function render(){
+  const q=document.getElementById('search').value.trim().toLowerCase();
+  const f=document.getElementById('filter').value;
+  // compteurs
+  const counts={}; Object.keys(LABELS).forEach(k=>counts[k]=0);
+  bars.forEach(b=>counts[effStatus(b)]++);
+  document.getElementById('counters').innerHTML = Object.keys(LABELS).map(k=>
+    `<button class="counter ${f===k?'on':''}" onclick="setFilter('${k}')"><b>${counts[k]}</b><span>${LABELS[k]}</span></button>`).join('');
+  // lignes
+  const list=bars.filter(b=>{
+    const s=effStatus(b);
+    const okF = !f || s===f;
+    const okQ = !q || [b.name,b.loc,b.owner].some(x=>x.toLowerCase().includes(q));
+    return okF && okQ;
+  });
+  document.getElementById('rows').innerHTML = list.map(b=>{
+    const s=effStatus(b);
+    const typeTxt = b.type==='Annexe' ? `Annexe de ${b.owner}` : b.type;
+    return `<tr onclick="openPanel(${b.id})">
+      <td><div class="name"><b>${b.name}</b><small>${b.loc} · ${b.owner} · ${b.wa}</small></div></td>
+      <td class="type">${typeTxt}</td>
+      <td>${badge(s)}</td>
+      <td class="mono">${fmtDate(b.end)}</td>
+      <td class="mono">${b.last}</td></tr>`;
+  }).join('');
+  document.getElementById('empty').classList.toggle('hide', list.length>0);
+}
+function setFilter(k){ const sel=document.getElementById('filter'); sel.value = sel.value===k ? '' : k; render(); }
+function exportCsv(){
+  const head='Bar;Localisation;Propriétaire;WhatsApp;Type;Statut;Date de fin;Dernière activité';
+  const lines=bars.map(b=>[b.name,b.loc,b.owner,b.wa,b.type,LABELS[effStatus(b)],fmtDate(b.end),b.last].join(';'));
+  const blob=new Blob(['\ufeff'+[head,...lines].join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='bars-barpro.csv'; a.click();
+  log('Export CSV des bars'); toast('Export CSV téléchargé');
+}
+
+// ---------- Journal & utilitaires ----------
+function log(action){ journal.unshift(`${new Date().toLocaleString('fr-FR')} — ${action}`); }
+let tt; function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.remove('hide'); clearTimeout(tt); tt=setTimeout(()=>t.classList.add('hide'),2600); }
+function openModal(html){ document.getElementById('modal').innerHTML=html; document.getElementById('modalWrap').classList.remove('hide'); }
+function closeModal(){ document.getElementById('modalWrap').classList.add('hide'); }
+function confirmBox(title,text,okLabel,onOk,danger){
+  openModal(`<h3>${title}</h3><p>${text}</p>
+    <div class="row"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button>
+    <button class="btn ${danger?'btn-danger':'btn-primary'}" id="okBtn">${okLabel}</button></div>`);
+  document.getElementById('okBtn').onclick=()=>{ closeModal(); onOk(); };
+}
+
+// ---------- Fiche bar ----------
+function openPanel(id){ const b=bars.find(x=>x.id===id); const s=effStatus(b);
+  const isOpen = (s==='suspendu');
+  const parent = b.type==='Annexe' ? `<div><span>Rattaché à</span><b>${b.parent}</b></div>` : '';
+  document.getElementById('panel').innerHTML = `
+    <button class="close" onclick="closePanel()" aria-label="Fermer">×</button>
+    <div class="mono" style="color:var(--muted);margin-bottom:8px">Fiche du bar</div>
+    <h2>${b.name}</h2>
+    <div style="margin-top:12px">${badge(s)}</div>
+    <div class="kv">
+      <div><span>Localisation</span><b>${b.loc}</b></div>
+      <div><span>Propriétaire</span><b>${b.owner}</b></div>
+      <div><span>WhatsApp</span><b class="mono">${b.wa}</b></div>
+      <div><span>Type</span><b>${b.type==='Annexe'?'Annexe':'Bar principal'}</b></div>
+      ${parent}
+      <div><span>Date de fin</span><b class="mono">${fmtDate(b.end)}</b></div>
+      <div><span>Dernière activité</span><b class="mono">${b.last}</b></div>
+    </div>
+    <div class="section-t">Actions</div>
+    <div class="actions">
+      <button class="btn btn-ghost btn-block" onclick="resendLink(${id})">Renvoyer un lien d'accès</button>
+      <button class="btn btn-ghost btn-block" onclick="toggleSuspend(${id})">${isOpen?'Réactiver le bar':'Suspendre le bar'}</button>
+      <button class="btn btn-ghost btn-block" onclick="extend(${id})">Prolonger l'abonnement</button>
+      <button class="btn btn-ghost btn-block" onclick="editWa(${id})">Modifier le numéro WhatsApp</button>
+      ${b.type!=='Annexe' ? `<button class="btn btn-ghost btn-block" onclick="toast('Annexes : ${b.owner} — 2 annexes rattachées')">Voir les annexes du propriétaire</button>` : ''}
+      <button class="btn btn-ghost btn-block" onclick="demo()">Créer ou réinitialiser un bar de démonstration</button>
+    </div>
+    <p class="hint">Chaque action est confirmée et tracée dans le journal.</p>`;
+  document.getElementById('panelWrap').classList.remove('hide');
+}
+function closePanel(){ document.getElementById('panelWrap').classList.add('hide'); }
+
+function resendLink(id){ const b=bars.find(x=>x.id===id);
+  confirmBox('Renvoyer le lien d\'accès',
+   `L'ancien appareil de ${b.owner} sera révoqué. Les transactions restent visibles. Le lien est envoyé uniquement au numéro enregistré : ${b.wa}.`,
+   'Renvoyer le lien', ()=>{ log(`Lien renvoyé — ${b.name}`); toast('Nouveau lien envoyé sur WhatsApp'); });
+}
+function toggleSuspend(id){ const b=bars.find(x=>x.id===id);
+  if(b.status==='suspendu'){
+    confirmBox('Réactiver le bar', `${b.name} retrouvera l'accès à la console propriétaire et au POS.`, 'Réactiver',
+      ()=>{ b.status='actif'; log(`Bar réactivé — ${b.name}`); toast('Bar réactivé'); render(); openPanel(id); });
+  } else {
+    confirmBox('Suspendre le bar', `${b.name} sera bloqué. Le message affiché sera « Contactez BarPro ». Les données sont conservées.`, 'Suspendre',
+      ()=>{ b.status='suspendu'; log(`Bar suspendu — ${b.name}`); toast('Bar suspendu'); render(); openPanel(id); }, true);
+  }
+}
+function extend(id){ const b=bars.find(x=>x.id===id);
+  openModal(`<h3>Prolonger l'abonnement</h3><p>${b.name} — fin actuelle : ${fmtDate(b.end)}.</p>
+    <div class="form">
+      <div class="field"><label>Nombre de mois</label><select class="input" id="mo"><option>1</option><option selected>3</option><option>6</option><option>12</option></select></div>
+      <div class="field"><label>Motif (obligatoire)</label><input class="input" id="motif" placeholder="Ex. geste commercial, panne de paiement"></div>
+    </div>
+    <div class="row"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="doExtend(${id})">Prolonger</button></div>`);
+}
+function doExtend(id){ const b=bars.find(x=>x.id===id); const motif=document.getElementById('motif').value.trim(); const mo=+document.getElementById('mo').value;
+  if(!motif){ toast('Le motif est obligatoire'); return; }
+  const base = b.end==='—' || new Date(b.end)<TODAY ? new Date(TODAY) : new Date(b.end);
+  base.setMonth(base.getMonth()+mo);
+  b.end = base.toISOString().slice(0,10); if(b.status==='expire') b.status='actif';
+  closeModal(); log(`Abonnement prolongé de ${mo} mois — ${b.name} (motif : ${motif})`); toast('Abonnement prolongé'); render(); openPanel(id);
+}
+function editWa(id){ const b=bars.find(x=>x.id===id);
+  openModal(`<h3>Modifier le numéro WhatsApp</h3><p>Les liens et codes sont envoyés à ce numéro. Seul le PDG peut le modifier.</p>
+    <div class="form"><div class="field"><label>Numéro actuel</label><input class="input mono" value="${b.wa}" disabled></div>
+    <div class="field"><label>Nouveau numéro (format international)</label><input class="input mono" id="newWa" placeholder="+229 01 00 00 00 00"></div></div>
+    <div class="row"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="saveWa(${id})">Continuer</button></div>`);
+}
+function saveWa(id){ const b=bars.find(x=>x.id===id); const n=document.getElementById('newWa').value.trim();
+  if(!/^\+229\s?\d{2}(\s?\d{2}){3}$/.test(n)){ toast('Numéro invalide : format +229 suivi de 8 chiffres'); return; }
+  closeModal();
+  confirmBox('Confirmer le changement', `Le numéro de ${b.owner} passera de ${b.wa} à ${n}. Les prochains liens seront envoyés à ce nouveau numéro.`, 'Confirmer',
+    ()=>{ const old=b.wa; b.wa=n; log(`Numéro WhatsApp modifié — ${b.name} (${old} → ${n})`); toast('Numéro mis à jour'); render(); openPanel(id); }, true);
+}
+function demo(){
+  confirmBox('Bar de démonstration', 'Un bar de démonstration avec des données fictives sera créé ou réinitialisé. Il ne consomme aucun essai.', 'Créer la démo',
+    ()=>{ log('Bar de démonstration créé ou réinitialisé'); toast('Bar de démonstration prêt'); });
+}
+
+// ---------- Création ----------
+function openCreate(){
+  openModal(`<h3>Nouveau bar</h3><p>Un lien d'accès unique, à usage unique, sera généré.</p>
+    <div class="form">
+      <div class="field"><label>Nom du bar</label><input class="input" id="cName" placeholder="Ex. Bar Le Relais"></div>
+      <div class="field"><label>Nom du propriétaire</label><input class="input" id="cOwner" placeholder="Ex. Mme Dossou"></div>
+      <div class="field"><label>Numéro WhatsApp du propriétaire</label><input class="input mono" id="cWa" placeholder="+229 01 00 00 00 00"><div class="hint">Format international, commence par +229.</div></div>
+      <div class="field"><label>Localisation</label><input class="input" id="cLoc" placeholder="Ex. Cotonou"></div>
+    </div>
+    <div class="row"><button class="btn btn-ghost" onclick="closeModal()">Annuler</button><button class="btn btn-primary" onclick="createBar()">Générer le lien</button></div>`);
+}
+function createBar(){
+  const name=cName.value.trim(), owner=cOwner.value.trim(), wa=cWa.value.trim(), loc=cLoc.value.trim();
+  if(!name||!owner||!loc){ toast('Renseignez le nom, le propriétaire et la localisation'); return; }
+  if(!/^\+229\s?\d{2}(\s?\d{2}){3}$/.test(wa)){ toast('Numéro invalide : format +229 suivi de 8 chiffres'); return; }
+  const token=Math.random().toString(36).slice(2,10).toUpperCase();
+  const link='https://barpro.app/a/'+token;
+  const b={id:Date.now(),name,loc,owner,wa,type:'Bar principal',status:'lien',end:'—',last:'Jamais'};
+  bars.unshift(b); log(`Lien généré — ${name}`); render();
+  const msg=`Bonjour ${owner}, bienvenue sur BarPro. Voici votre lien d'accès unique pour ${name} : ${link}. Il ne peut être utilisé qu'une fois.`;
+  const waUrl='https://wa.me/'+wa.replace(/\D/g,'')+'?text='+encodeURIComponent(msg);
+  openModal(`<h3>Lien généré</h3><p>Envoyez-le au numéro enregistré.</p>
+    <div class="wa-box"><span class="mono" style="color:var(--muted)">Message WhatsApp</span><pre>${msg}</pre></div>
+    <div class="row" style="justify-content:flex-start;flex-wrap:wrap">
+      <a class="btn btn-primary" href="${waUrl}" target="_blank" rel="noopener" style="text-decoration:none">Envoyer sur WhatsApp</a>
+      <button class="btn btn-ghost" onclick="navigator.clipboard&&navigator.clipboard.writeText('${link}');toast('Lien copié')">Copier le lien</button>
+      <button class="btn btn-ghost" onclick="closeModal()">Fermer</button>
+    </div>`);
+}
+
+// Fermeture par Échap
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closePanel(); } });
+</script>
+</body>
+</html>

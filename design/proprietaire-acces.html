@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Propriétaire — Accès</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:16px;line-height:24px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+.hide{display:none!important}
+/* Sélecteur de démo (hors téléphone) */
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;outline:none}
+/* Téléphone */
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600;color:var(--ink)}
+.screen{position:absolute;inset:44px 0 0 0;padding:8px 24px 32px;display:flex;flex-direction:column;overflow-y:auto;background:var(--paper)}
+.screen.dark{background:var(--forest);color:var(--white)}
+.sync{position:absolute;top:44px;left:0;right:0;z-index:5;display:flex;justify-content:center}
+.sync span{font-size:12px;font-weight:600;padding:6px 12px;border-radius:999px;background:var(--white);box-shadow:var(--shadow);display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--lime);display:inline-block}
+.dot.wait{background:var(--amber)}
+.offline{background:var(--amber);color:#4D3500;font-size:13px;font-weight:600;text-align:center;padding:10px;position:absolute;top:44px;left:0;right:0;z-index:6}
+.mark{width:64px;height:64px;margin:16px 0 24px}
+h1{font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.dark h1{color:var(--white)}
+.lead{color:var(--muted);margin:10px 0 28px;font-size:16px}
+.dark .lead{color:rgba(255,255,255,.72)}
+.spacer{flex:1}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;padding:0 20px;border-radius:999px;border:0;font-weight:600;font-size:16px;margin-top:12px;transition:transform .2s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--lime);color:var(--forest-deep)}
+.btn-dark{background:var(--forest);color:var(--white)}
+.btn-ghost{background:transparent;color:var(--forest-deep);box-shadow:inset 0 0 0 1.5px var(--forest-deep)}
+.btn-wa{background:#25D366;color:#fff}
+.btn:disabled{opacity:.4}
+.link{background:none;border:0;color:var(--mid);font-weight:600;padding:12px;margin:0 auto;display:block}
+.card{background:var(--white);border-radius:24px;padding:20px;box-shadow:var(--shadow);margin-bottom:12px}
+.card b{display:block;font-size:17px;margin-bottom:4px}
+.card p{color:var(--muted);font-size:14px;line-height:20px}
+.notice{border-radius:20px;padding:16px 18px;margin-bottom:16px;font-size:14px;line-height:21px;display:flex;gap:12px;align-items:flex-start}
+.notice svg{width:20px;height:20px;flex:none;margin-top:1px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.n-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.n-warn{background:#FDF0CF;color:#7A5300}
+.n-err{background:#FFE1DD;color:#9A2A1E}
+.n-info{background:#E3EEFF;color:#1B4D9B}
+.n-dark{background:rgba(255,255,255,.1);color:var(--white)}
+.err{background:#FFE1DD;color:#9A2A1E;border-radius:16px;padding:12px 14px;font-size:14px;margin-top:12px}
+.ok{background:var(--lime-soft);color:var(--forest-deep);border-radius:16px;padding:12px 14px;font-size:14px;margin-top:12px}
+.input{width:100%;height:56px;border-radius:16px;border:0;background:var(--white);box-shadow:inset 0 0 0 1px var(--line);padding:0 18px;font-size:17px;outline:none}
+.input:focus{box-shadow:inset 0 0 0 2px var(--mid),0 0 0 4px rgba(139,250,90,.35)}
+.input.code{font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;text-align:center;font-size:19px}
+.mono{font-family:var(--mono)}
+.pill-code{font-family:var(--mono);font-size:24px;letter-spacing:.14em;background:var(--forest);color:var(--lime);border-radius:18px;padding:18px;text-align:center;margin:12px 0}
+.steps{display:flex;gap:8px;justify-content:center;margin:0 0 20px}
+.steps i{width:28px;height:4px;border-radius:999px;background:var(--line)}
+.steps i.on{background:var(--forest)}
+.intro-art{height:200px;border-radius:28px;background:var(--forest);display:grid;place-items:center;margin-bottom:24px}
+.intro-art svg{width:96px;height:96px}
+.tabs{display:flex;background:var(--white);border-radius:999px;padding:4px;box-shadow:var(--shadow);margin-bottom:20px}
+.tabs button{flex:1;height:40px;border:0;background:none;border-radius:999px;font-weight:600;font-size:14px;color:var(--muted)}
+.tabs button.on{background:var(--forest);color:var(--lime)}
+.phone-mock{background:var(--white);border-radius:20px;padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
+.phone-mock ol{padding-left:20px;font-size:15px;line-height:24px}
+.phone-mock li{margin-bottom:6px}
+.pin{display:flex;justify-content:center;gap:14px;margin:24px 0}
+.pin i{width:16px;height:16px;border-radius:50%;background:var(--line)}
+.pin i.on{background:var(--forest)}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:auto;padding-bottom:8px}
+.keys button{height:64px;border-radius:50%;border:0;background:var(--white);box-shadow:var(--shadow);font-size:24px;font-weight:600;color:var(--ink);justify-self:center;width:72px}
+.keys button.ghost{background:none;box-shadow:none;font-size:14px;color:var(--muted)}
+.keys button:disabled{opacity:.35}
+.sel-st{margin-top:auto;padding-bottom:8px}
+.bigicon{width:84px;height:84px;border-radius:50%;background:var(--lime-soft);display:grid;place-items:center;margin:24px auto 16px}
+.bigicon svg{width:40px;height:40px;stroke:var(--forest-deep);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.center{text-align:center}
+.wa-msg{font-size:14px;color:var(--muted);background:var(--white);border-radius:16px;padding:14px;margin:12px 0;box-shadow:var(--shadow)}
+.shop{background:var(--forest);color:var(--white);border-radius:24px;padding:20px;margin-bottom:12px}
+.shop b{font-size:20px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="mark" viewBox="0 0 200 200"><rect width="200" height="200" rx="46" fill="#8BFA5A"/><path fill="#0B3322" d="M64 23 H88.5 V60 C88.5 66 106.6 74 106.6 92 V157 Q106.6 169 94.6 169 H58 Q46 169 46 157 V92 C46 74 64 66 64 60 Z"/><path fill="#8BFA5A" stroke="#8BFA5A" stroke-width="7" stroke-linejoin="round" d="M84 92 H160 L152.6 160 Q151.6 169 142 169 H104 Q94.5 169 95.5 160 Z"/><path fill="#0B3322" d="M84 92 H160 L152.6 160 Q151.6 169 142 169 H104 Q94.5 169 95.5 160 Z"/></symbol>
+</defs></svg>
+
+<!-- Sélecteur de scénario (hors téléphone) -->
+<div class="demo-bar">
+  <label for="scenario">Scénario de démonstration</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="essai">Essai en cours (6 jours)</option>
+    <option value="actif">Abonnement actif</option>
+    <option value="bande">Fin d'abonnement dans 2 jours</option>
+    <option value="expire">Expiré (lecture seule)</option>
+    <option value="suspendu">Suspendu</option>
+    <option value="utilise">Lien déjà utilisé</option>
+  </select>
+</div>
+
+<div class="phone" id="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="sync" id="syncChip"><span><i class="dot"></i>Synchronisé</span></div>
+  <div class="offline hide" id="offline">Hors ligne · vos actions seront synchronisées plus tard</div>
+
+  <!-- 1. OUVERTURE DU LIEN -->
+  <div class="screen" id="s-lien">
+    <svg class="mark" viewBox="0 0 200 200"><use href="#mark"/></svg>
+    <h1>Bienvenue, M. Adjovi</h1>
+    <p class="lead">Vous avez été invité à suivre <b>Buvette Chez Mama Africa</b> sur BarPro.</p>
+    <div class="card"><b>Lien personnel</b><p>Ce lien ne fonctionne qu'une seule fois et ne peut être envoyé qu'à votre numéro WhatsApp.</p></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-intro1')">Commencer</button>
+  </div>
+
+  <!-- 2. INTRODUCTION (3 écrans) -->
+  <div class="screen" id="s-intro1">
+    <div class="steps"><i class="on"></i><i></i><i></i></div>
+    <div class="intro-art"><svg viewBox="0 0 200 200"><use href="#mark"/></svg></div>
+    <h1>Suivez vos ventes</h1>
+    <p class="lead">Chaque ticket du gérant apparaît sur votre téléphone, avec les totaux de la journée.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-intro2')">Suivant</button>
+    <button class="link" onclick="go('s-install')">Passer</button>
+  </div>
+  <div class="screen" id="s-intro2">
+    <div class="steps"><i></i><i class="on"></i><i></i></div>
+    <div class="intro-art"><svg viewBox="0 0 200 200"><use href="#mark"/></svg></div>
+    <h1>Gardez le contrôle</h1>
+    <p class="lead">Recevez les alertes de pénurie, de casse et de changement de prix, sans rien modifier vous-même.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-intro3')">Suivant</button>
+  </div>
+  <div class="screen" id="s-intro3">
+    <div class="steps"><i></i><i></i><i class="on"></i></div>
+    <div class="intro-art"><svg viewBox="0 0 200 200"><use href="#mark"/></svg></div>
+    <h1>Hors connexion, ça marche</h1>
+    <p class="lead">Les données restent à jour dès que la connexion revient. Vous voyez toujours l'heure de la dernière synchronisation.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-install')">Installer l'application</button>
+  </div>
+
+  <!-- 3. INSTALLATION -->
+  <div class="screen" id="s-install">
+    <h1>Installer BarPro</h1>
+    <p class="lead">Ajoutez l'application à votre écran d'accueil pour l'ouvrir comme une vraie appli.</p>
+    <div class="tabs"><button class="on" id="tabAnd" onclick="tab('and')">Android</button><button id="tabIos" onclick="tab('ios')">iPhone</button></div>
+    <div class="phone-mock" id="guideAnd"><ol><li>Ouvrez ce lien dans <b>Chrome</b>.</li><li>Appuyez sur le menu <b>⋮</b> en haut à droite.</li><li>Choisissez <b>« Installer l'application »</b>.</li></ol></div>
+    <div class="phone-mock hide" id="guideIos"><ol><li>Ouvrez ce lien dans <b>Safari</b>.</li><li>Appuyez sur le bouton <b>Partager</b>.</li><li>Choisissez <b>« Sur l'écran d'accueil »</b>.</li></ol></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-session')">J'ai installé l'application</button>
+    <button class="link" onclick="go('s-liaison')">La session n'apparaît pas ?</button>
+  </div>
+
+  <!-- 4. CODE DE LIAISON -->
+  <div class="screen" id="s-liaison">
+    <h1>Code de liaison</h1>
+    <p class="lead">Si la session n'apparaît pas dans l'application installée, retapez ce code dans l'application.</p>
+    <div class="pill-code" id="linkCode">K7QM-2XP9-TNVF</div>
+    <div class="notice n-info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>Ce cas arrive souvent sur iPhone. Le code reste valable 10 minutes.</span></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-session')">Continuer</button>
+  </div>
+
+  <!-- 5. CHOIX DE SESSION -->
+  <div class="screen" id="s-session">
+    <div class="bigicon"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+    <h1 class="center">Vous êtes prêt</h1>
+    <p class="lead center">Choisissez comment commencer.</p>
+    <div class="card"><b>Session gratuite</b><p>7 jours, pour vous et votre gérant, avec la même date de fin. Un seul essai par bar.</p></div>
+    <div class="card"><b>J'ai un code</b><p>Saisissez le code d'abonnement reçu de BarPro.</p></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="startTrial()">Session gratuite</button>
+    <button class="btn btn-ghost" onclick="go('s-code')">J'ai un code</button>
+  </div>
+
+  <!-- 6. SAISIE DU CODE -->
+  <div class="screen" id="s-code">
+    <h1>Code d'abonnement</h1>
+    <p class="lead">12 caractères, sans 0, O, 1 ni I. Le code s'ajoute à la date de fin actuelle.</p>
+    <input class="input code" id="subCode" placeholder="XXXX-XXXX-XXXX" maxlength="14" oninput="fmtCode(this)">
+    <div id="codeMsg"></div>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="applyCode()">Valider le code</button>
+    <button class="link" onclick="go('s-session')">Retour</button>
+  </div>
+
+  <!-- 7. SUCCÈS CODE -->
+  <div class="screen" id="s-codeok">
+    <div class="bigicon"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></div>
+    <h1 class="center">Abonnement activé</h1>
+    <p class="lead center" id="okText">Votre abonnement est prolongé jusqu'au 31/01/2027.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-primary" onclick="go('s-pin')">Continuer</button>
+  </div>
+
+  <!-- 8. PIN FACULTATIF -->
+  <div class="screen" id="s-pin">
+    <h1>Code PIN (facultatif)</h1>
+    <p class="lead">Protégez l'application avec un code de 4 à 6 chiffres. Désactivé par défaut.</p>
+    <div class="pin" id="pinDots"><i></i><i></i><i></i><i></i></div>
+    <div class="keys" id="pinKeys"></div>
+    <button class="btn btn-primary" onclick="setPinDone()">Activer le PIN</button>
+    <button class="link" onclick="go('s-accueil')">Passer, je ne veux pas de PIN</button>
+  </div>
+
+  <!-- 9. VERROUILLAGE PIN (démo) -->
+  <div class="screen" id="s-lock">
+    <svg class="mark" viewBox="0 0 200 200" style="margin:24px auto"><use href="#mark"/></svg>
+    <h1 class="center">Saisissez votre PIN</h1>
+    <div class="pin" id="lockDots"><i></i><i></i><i></i><i></i></div>
+    <div id="lockMsg"></div>
+    <div class="keys" id="lockKeys"></div>
+  </div>
+
+  <!-- 10. LIEN DÉJÀ UTILISÉ / RÉVOQUÉ -->
+  <div class="screen" id="s-utilise">
+    <div class="bigicon" style="background:#FFE1DD"><svg viewBox="0 0 24 24" style="stroke:#9A2A1E"><path d="M9 9l6 6M15 9l-6 6"/><circle cx="12" cy="12" r="9"/></svg></div>
+    <h1 class="center">Lien déjà utilisé</h1>
+    <p class="lead center">Ce lien a déjà été utilisé. Contactez BarPro.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-wa" onclick="wa()">Contacter BarPro sur WhatsApp</button>
+  </div>
+
+  <!-- 11. ÉTATS DU BAR : BANDE + SUSPENDU + ACCUEIL -->
+  <div class="screen" id="s-suspendu">
+    <div class="bigicon" style="background:var(--forest)"><svg viewBox="0 0 24 24" style="stroke:var(--lime)"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></div>
+    <h1 class="center">Accès suspendu</h1>
+    <p class="lead center">Contactez BarPro pour rétablir votre accès.</p>
+    <div class="spacer"></div>
+    <button class="btn btn-wa" onclick="wa()">Contacter BarPro sur WhatsApp</button>
+  </div>
+
+  <div class="screen" id="s-accueil">
+    <div id="stateBanner"></div>
+    <h1 style="margin-top:4px">Bonjour, M. Adjovi</h1>
+    <p class="lead" style="margin-bottom:16px">Buvette Chez Mama Africa · Cotonou</p>
+    <div class="shop" id="todayCard">
+      <div class="mono" style="font-size:12px;opacity:.7">Journée du 29/10/2026 · provisoire jusqu'à 5 h</div>
+      <div style="display:flex;justify-content:space-between;margin-top:12px"><span>Chiffre d'affaires</span><b class="mono">248 000 F</b></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:14px;opacity:.8"><span>Tickets</span><span>41</span></div>
+    </div>
+    <div class="card" style="margin-top:4px"><b style="font-size:15px">Accès aux écrans</b><p>Ventes, stock et statistiques s'ouvrent dans les fichiers suivants de la maquette.</p></div>
+    <div class="spacer"></div>
+    <button class="btn btn-ghost" onclick="go('s-lien')">Revoir l'accueil d'accès</button>
+  </div>
+</div>
+
+<script>
+// ---------- Données et scénario ----------
+const TODAY=new Date('2026-10-29T10:00:00');
+const WA_BARPRO='+229 01 90 00 00 99';
+let scenario='essai';
+let pinSet=false, pinValue='', pinStep='setup', pinFails=0, lockUntil=0, otpFails=0, subEnd=new Date('2026-11-27'), usedCodes=['USEDUSEDUSED'];
+const SCREENS=['s-lien','s-intro1','s-intro2','s-intro3','s-install','s-liaison','s-session','s-code','s-codeok','s-pin','s-lock','s-utilise','s-suspendu','s-accueil'];
+
+function go(id){
+  SCREENS.concat(['s-lock']).forEach(s=>{const el=document.getElementById(s); if(el) el.classList.add('hide');});
+  document.getElementById(id).classList.remove('hide');
+  if(id==='s-pin') renderPin();
+  if(id==='s-lock') renderLock();
+  if(id==='s-accueil') renderHome();
+  // enregistrement pour le retour arrière, comme un vrai parcours
+  const el=document.getElementById(id); el.scrollTop=0;
+}
+function setScenario(v){
+  scenario=v;
+  const today=TODAY;
+  if(v==='essai'){ subEnd=new Date(today.getTime()+6*86400000); }
+  if(v==='actif'){ subEnd=new Date('2026-11-27'); }
+  if(v==='bande'){ subEnd=new Date(today.getTime()+2*86400000); }
+  if(v==='expire'){ subEnd=new Date('2026-10-20'); }
+  if(v==='suspendu'){ return go('s-suspendu'); }
+  if(v==='utilise'){ return go('s-utilise'); }
+  go('s-lien');
+}
+// Premier accès : scénario « lien utilisé » ou « suspendu » au début
+function init(){ setScenario('essai'); }
+
+// ---------- Session gratuite ----------
+function startTrial(){
+  if(scenario==='utilise'){ return go('s-utilise'); }
+  subEnd=new Date(TODAY.getTime()+7*86400000);
+  go('s-accueil');
+}
+function fmtDate(d){ return d.toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+
+// ---------- Code d'abonnement ----------
+function fmtCode(el){
+  let v=el.value.toUpperCase().replace(/[^A-HJ-NP-Z2-9]/g,'').slice(0,12);
+  el.value=v.replace(/(.{4})(?=.)/g,'$1-');
+}
+function applyCode(){
+  const raw=document.getElementById('subCode').value.replace(/-/g,'');
+  const msg=document.getElementById('codeMsg');
+  if(otpFails>=5){ msg.innerHTML='<div class="err">Trop de codes erronés. Réessayez dans 15 minutes.</div>'; return; }
+  if(!/^[A-HJ-NP-Z2-9]{12}$/.test(raw)){ otpFails++; msg.innerHTML='<div class="err">Code invalide. Vérifiez les 12 caractères.</div>'; return; }
+  if(usedCodes.includes(raw)){ msg.innerHTML='<div class="err">Ce code a déjà été utilisé.</div>'; return; }
+  if(raw.startsWith('BAD')){ otpFails++; msg.innerHTML='<div class="err">Code invalide. Il ne correspond à aucun abonnement.</div>'; return; }
+  usedCodes.push(raw);
+  const base = subEnd<TODAY ? new Date(TODAY) : new Date(subEnd);
+  base.setMonth(base.getMonth()+3); subEnd=base;
+  document.getElementById('okText').textContent=`Votre abonnement est prolongé jusqu'au ${fmtDate(subEnd)}.`;
+  go('s-codeok');
+}
+function wa(){ window.open('https://wa.me/'+WA_BARPRO.replace(/\D/g,'')+'?text='+encodeURIComponent('Bonjour BarPro, j\'ai besoin d\'aide pour mon accès à Buvette Chez Mama Africa.'),'_blank'); }
+
+// ---------- PIN ----------
+function renderPin(){
+  document.getElementById('pinKeys').innerHTML=keypad(pressPin);
+  document.getElementById('pinDots').innerHTML=dots(pinValue.length,6);
+}
+function renderLock(){
+  document.getElementById('lockKeys').innerHTML=keypad(pressLock);
+  document.getElementById('lockDots').innerHTML=dots(pinValue.length,4);
+}
+function keypad(fn){
+  const k=['1','2','3','4','5','6','7','8','9','','0','⌫'];
+  return k.map(x=> x===''? '<span></span>' : `<button onclick="${fn}('${x}')">${x}</button>`).join('');
+}
+function dots(n,max){ let s=''; for(let i=0;i<max;i++) s+=`<i class="${i<n?'on':''}"></i>`; return s; }
+function pressPin(k){
+  if(k==='⌫'){ pinValue=pinValue.slice(0,-1); }
+  else if(pinValue.length<6){ pinValue+=k; }
+  renderPin();
+}
+function setPinDone(){
+  if(pinValue.length<4){ toast('Le PIN doit comporter 4 à 6 chiffres'); return; }
+  pinSet=true; pinValue=''; go('s-accueil');
+}
+function toast(m){ alert(m); }
+function pressLock(k){
+  if(Date.now()<lockUntil){ return; }
+  if(k==='⌫'){ pinValue=pinValue.slice(0,-1); }
+  else if(pinValue.length<4){ pinValue+=k; }
+  if(pinValue.length===4){
+    if(pinValue==='1234'){ pinValue=''; pinFails=0; go('s-accueil'); return; }
+    pinFails++; pinValue='';
+    if(pinFails>=5){ lockUntil=Date.now()+5*60*1000; document.getElementById('lockMsg').innerHTML='<div class="err">Trop de PIN erronés. Réessayez dans 5 minutes.</div>'; pinFails=0; }
+    else document.getElementById('lockMsg').innerHTML='<div class="err">PIN incorrect.</div>';
+  }
+  renderLock();
+}
+
+// ---------- Accueil : bande des 3 derniers jours, expiré, suspendu ----------
+function renderHome(){
+  const days=Math.ceil((subEnd-TODAY)/86400000);
+  let html='';
+  if(scenario==='expire'){
+    html=`<div class="notice n-err"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span><b>Abonnement expiré.</b> Lecture seule : historiques et export PDF accessibles. Vente et saisies sont bloquées. Un code réactive l'accès.</span></div>
+      <button class="btn btn-wa" style="margin-top:0;margin-bottom:12px" onclick="wa()">Demander un code à BarPro</button>
+      <button class="btn btn-ghost" style="margin-top:0;margin-bottom:12px" onclick="go('s-code')">J'ai un code</button>`;
+  } else if(scenario==='bande' || (days<=3 && days>=0)){
+    html=`<div class="notice n-warn"><svg viewBox="0 0 24 24"><path d="M12 8v5M12 17h.01"/><path d="M10.3 3.9L2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg><span><b>Votre abonnement se termine le ${fmtDate(subEnd)}.</b></span></div>
+      <button class="btn btn-wa" style="margin-top:0;margin-bottom:12px" onclick="wa()">Renouveler sur WhatsApp</button>`;
+  } else if(scenario==='essai'){
+    html=`<div class="notice n-info"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span><b>Essai en cours.</b> Il reste ${days} jours, jusqu'au ${fmtDate(subEnd)}.</span></div>`;
+  } else {
+    html=`<div class="notice n-ok"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span><b>Abonnement actif</b> jusqu'au ${fmtDate(subEnd)}.</span></div>`;
+  }
+  document.getElementById('stateBanner').innerHTML=html;
+  document.getElementById('todayCard').style.opacity = scenario==='expire' ? '.6' : '1';
+}
+
+// ---------- Synchronisation et hors-ligne ----------
+let pending=0;
+function syncChip(){ document.getElementById('syncChip').innerHTML = pending>0
+  ? `<span><i class="dot wait"></i>${pending} action${pending>1?'s':''} en attente</span>`
+  : `<span><i class="dot"></i>Synchronisé</span>`; }
+window.addEventListener('offline',()=>{ document.getElementById('offline').classList.remove('hide'); pending=2; syncChip(); });
+window.addEventListener('online',()=>{ document.getElementById('offline').classList.add('hide'); pending=0; syncChip(); });
+
+// ---------- Installation ----------
+function tab(which){
+  const and=which==='and';
+  document.getElementById('tabAnd').classList.toggle('on',and);
+  document.getElementById('tabIos').classList.toggle('on',!and);
+  document.getElementById('guideAnd').classList.toggle('hide',!and);
+  document.getElementById('guideIos').classList.toggle('hide',and);
+}
+
+// ---------- Démarrage ----------
+document.getElementById('linkCode').textContent='K7QM-2XP9-TNVF';
+init();
+</script>
+</body>
+</html>

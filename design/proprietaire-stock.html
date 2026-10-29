@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B3322">
+<title>App Propriétaire — Stock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--lime:#8BFA5A;--forest:#0B3322;--forest-deep:#06231A;--mid:#1F5C3F;--paper:#F5F8F3;--white:#fff;--ink:#0B1F16;--muted:#5E7266;--line:#DCE6DD;--amber:#F5B841;--coral:#FF6B5B;--lime-soft:#D9FBC8;
+--font:"Inter",-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--shadow:0 1px 2px rgba(11,31,22,.06),0 8px 24px rgba(11,31,22,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);font-size:15px;line-height:22px;color:var(--ink);background:#E9EEE9;min-height:100vh;-webkit-font-smoothing:antialiased}
+button,select{font:inherit;color:inherit;cursor:pointer}
+.hide{display:none!important}
+.demo-bar{max-width:390px;margin:0 auto;padding:16px 0 12px;display:flex;flex-direction:column;gap:8px}
+.demo-bar label{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.demo-bar select{height:40px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);padding:0 16px;font-size:14px;outline:none}
+.phone{width:390px;height:844px;max-width:100%;margin:0 auto;background:var(--paper);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(6,35,26,.25),0 0 0 10px #0B1F16;display:flex;flex-direction:column}
+@media (max-width:440px){.phone{border-radius:0;box-shadow:none;height:100vh;height:100dvh}}
+.status{height:44px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:0 28px;font-size:14px;font-weight:600}
+.head{padding:4px 20px 0}
+.head h1{font-size:28px;line-height:34px;font-weight:800;letter-spacing:-.03em;color:var(--forest-deep)}
+.head p{color:var(--muted);font-size:13px;margin-top:2px}
+.subtabs{display:flex;background:var(--white);border-radius:999px;padding:4px;box-shadow:var(--shadow);margin:14px 20px 0}
+.subtabs button{flex:1;height:38px;border:0;background:none;border-radius:999px;font-weight:600;font-size:13px;color:var(--muted);position:relative}
+.subtabs button.on{background:var(--forest);color:var(--lime)}
+.subtabs .n{display:inline-grid;place-items:center;min-width:18px;height:18px;border-radius:999px;background:var(--coral);color:#fff;font-size:10px;font-weight:700;margin-left:4px;padding:0 5px}
+.content{flex:1;overflow-y:auto;padding:14px 20px 24px}
+.period{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px}
+.period button{flex:none;height:34px;padding:0 14px;border-radius:999px;border:0;background:var(--white);box-shadow:var(--shadow);font-size:13px;font-weight:600;color:var(--muted)}
+.period button.on{background:var(--forest);color:var(--lime)}
+.note{font-size:13px;color:var(--muted);margin:6px 0 12px}
+.lock{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mid);font-weight:600;margin-bottom:10px}
+.lock svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Bandes stock */
+.band{background:var(--white);border-radius:20px;padding:14px;margin-bottom:10px;box-shadow:var(--shadow);border:0;width:100%;text-align:left;display:flex;gap:14px;align-items:center}
+.photo{width:56px;height:56px;border-radius:16px;flex:none;display:grid;place-items:center}
+.photo svg{width:26px;height:26px;stroke:var(--forest-deep);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.band .info{flex:1;min-width:0}
+.band .name{font-weight:700;font-size:15px}
+.band .meta{font-size:12px;color:var(--muted);margin-top:2px}
+.band .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:8px;font-size:12px;color:var(--muted)}
+.band .nums b{display:block;font-family:var(--mono);color:var(--ink);font-size:13px}
+.reste{text-align:right;flex:none}
+.reste b{display:block;font-family:var(--mono);font-size:13px;white-space:nowrap}
+.reste small{display:block;font-size:11px;color:var(--muted)}
+.st{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;margin-top:6px;white-space:nowrap}
+.st svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.s-ok{background:var(--lime-soft);color:var(--forest-deep)}
+.s-low{background:#FDF0CF;color:#7A5300}
+.s-out{background:#FFE1DD;color:#9A2A1E}
+/* Fiche */
+.sheet{position:absolute;inset:44px 0 0 0;background:var(--paper);display:flex;flex-direction:column;z-index:10}
+.sheet-top{display:flex;align-items:center;gap:12px;padding:12px 20px}
+.sheet-top button{width:40px;height:40px;border-radius:50%;border:0;background:var(--white);box-shadow:var(--shadow);font-size:18px}
+.sheet-top h2{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--forest-deep)}
+.sheet-body{padding:0 20px 24px;overflow-y:auto;flex:1}
+.card{background:var(--white);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:12px}
+.kv{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;gap:12px}
+.kv:last-child{border:0}
+.kv span{color:var(--muted)}
+.kv b{font-family:var(--mono);text-align:right}
+.sec{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);font-weight:700;margin:18px 0 8px}
+.list{background:var(--white);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+.li{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.li:last-child{border:0}
+.li small{display:block;color:var(--muted);font-size:12px}
+.li b{font-family:var(--mono);white-space:nowrap}
+.total{display:flex;justify-content:space-between;padding:12px 16px;background:var(--paper);font-size:14px;font-weight:600}
+.total b{font-family:var(--mono)}
+.only-owner{background:#E3EEFF;color:#1B4D9B;border-radius:16px;padding:12px 14px;font-size:13px;margin-bottom:12px}
+.info-box{background:var(--forest);color:var(--white);border-radius:20px;padding:14px 16px;font-size:13px;line-height:20px;margin:12px 0}
+.tile-bottle{width:100%;height:100%}
+.row-ok{color:var(--forest-deep)}
+.big{font-size:22px;font-weight:800;letter-spacing:-.02em;font-family:var(--mono)}
+.ledger{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);font-size:14px}
+.ledger:last-child{border:0}
+.ledger small{color:var(--muted);display:block;font-size:12px}
+.tag{font-size:11px;font-weight:700;background:#FFE1DD;color:#9A2A1E;padding:3px 8px;border-radius:999px;vertical-align:middle;margin-left:6px}
+.pdf{width:100%;height:50px;border-radius:999px;border:0;background:var(--forest);color:var(--white);font-weight:600;margin-top:10px;font-size:15px}
+.pdf.outline{background:none;box-shadow:inset 0 0 0 1.5px var(--forest-deep);color:var(--forest-deep)}
+.nav{flex:none;background:var(--white);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px 22px;position:relative}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--muted);min-height:48px;padding-top:2px;position:relative}
+.tab svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.tab.on{color:var(--forest)}
+.tab.on::before{content:"";position:absolute;top:-8px;width:28px;height:3px;border-radius:999px;background:var(--lime)}
+.toast{position:absolute;left:20px;right:20px;bottom:96px;background:var(--forest);color:var(--white);padding:12px 16px;border-radius:16px;font-size:14px;font-weight:600;text-align:center;z-index:30}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <label for="scenario">Scénario de démonstration</label>
+  <select id="scenario" onchange="setScenario(this.value)">
+    <option value="normal">Abonnement actif</option>
+    <option value="expire">Expiré (lecture seule)</option>
+    <option value="inv">Inventaire en cours chez le gérant</option>
+  </select>
+</div>
+
+<div class="phone" id="phone">
+  <div class="status"><span>9:41</span><span class="mono" style="font-size:12px">●●● 5G</span></div>
+  <div class="head" id="head"></div>
+  <div class="subtabs" id="subtabs"></div>
+  <div class="content" id="content"></div>
+  <div class="sheet hide" id="sheet"></div>
+  <nav class="nav" id="nav"></nav>
+  <div class="toast hide" id="toast"></div>
+</div>
+
+<script>
+// ---------- Données d'exemple (bouteilles par casier, seuil = 1 casier) ----------
+// reste en bouteilles ; achat, vendu, casse sur la période choisie (ici : depuis le dernier inventaire)
+const P=[
+ {id:'castel',name:'Castel 65 cl',cat:'Bières',fmt:'65 cl',bpc:12,buyC:8400,sell:800,promo:null,tile:'#FCE7B0',ach:36,vendu:31,casse:2,reste:32,inv:'21/10/2026',invQ:'2 casiers + 5 bouteilles'},
+ {id:'beaufort',name:'Beaufort 65 cl',cat:'Bières',fmt:'65 cl',bpc:12,buyC:8100,sell:800,promo:null,tile:'#E8D3B5',ach:12,vendu:24,casse:0,reste:0,inv:'21/10/2026',invQ:'1 casier'},
+ {id:'benin',name:'La Béninoise 65 cl',cat:'Bières',fmt:'65 cl',bpc:12,buyC:7800,sell:700,promo:null,tile:'#F7D9C4',ach:12,vendu:15,casse:0,reste:9,inv:'21/10/2026',invQ:'1 casier'},
+ {id:'heineken',name:'Heineken 33 cl',cat:'Bières',fmt:'33 cl',bpc:24,buyC:14400,sell:800,promo:null,tile:'#CDEBD0',ach:24,vendu:20,casse:0,reste:28,inv:'21/10/2026',invQ:'1 casier'},
+ {id:'coca',name:'Coca-Cola 33 cl',cat:'Sucreries',fmt:'33 cl',bpc:24,buyC:5760,sell:400,promo:'3 pour 1 000 F',tile:'#F9C9C0',ach:48,vendu:48,casse:0,reste:74,inv:'21/10/2026',invQ:'3 casiers + 2 bouteilles'},
+ {id:'fanta',name:'Fanta 33 cl',cat:'Sucreries',fmt:'33 cl',bpc:24,buyC:5760,sell:400,promo:'3 pour 1 000 F',tile:'#FFD9A8',ach:24,vendu:30,casse:0,reste:18,inv:'21/10/2026',invQ:'1 casier'},
+ {id:'sprite',name:'Sprite 33 cl',cat:'Sucreries',fmt:'33 cl',bpc:24,buyC:5760,sell:400,promo:null,tile:'#D5F0C8',ach:24,vendu:24,casse:0,reste:48,inv:'21/10/2026',invQ:'2 casiers'},
+ {id:'ananas',name:'Top Ananas 33 cl',cat:'Sucreries',fmt:'33 cl',bpc:24,buyC:5520,sell:400,promo:null,tile:'#FCEBB0',ach:0,vendu:6,casse:0,reste:30,inv:'21/10/2026',invQ:'1 casier + 12 bouteilles'},
+ {id:'pos50',name:'Possotomè 50 cl',cat:'Eau minérale',fmt:'50 cl',bpc:12,buyC:2400,sell:300,promo:null,tile:'#D3E8F7',ach:24,vendu:24,casse:0,reste:36,inv:'21/10/2026',invQ:'3 casiers'},
+ {id:'pos15',name:'Possotomè 1,5 L',cat:'Eau minérale',fmt:'1,5 L',bpc:6,buyC:1800,sell:500,promo:null,tile:'#CFE6F5',ach:12,vendu:12,casse:0,reste:9,inv:'21/10/2026',invQ:'1 casier + 3 bouteilles'},
+ {id:'cris50',name:'Cristal 50 cl',cat:'Eau minérale',fmt:'50 cl',bpc:12,buyC:2400,sell:300,promo:null,tile:'#DDEEF9',ach:24,vendu:24,casse:0,reste:24,inv:'21/10/2026',invQ:'2 casiers'},
+ {id:'cris15',name:'Cristal 1,5 L',cat:'Eau minérale',fmt:'1,5 L',bpc:6,buyC:1800,sell:500,promo:null,tile:'#C8E2F4',ach:18,vendu:18,casse:0,reste:12,inv:'21/10/2026',invQ:'2 casiers'}
+];
+// Motifs de casse par produit (détail de la fiche)
+const CASSE_MOTIFS={castel:[{d:'24/10 14 h',q:1,m:'Cassée'},{d:'27/10 11 h',q:1,m:'Défaillante (gaz)'}]};
+// Ravitaillements du jour (journée commerciale)
+const RAVIT={
+ '29/10/2026':[
+  {h:'08:15',who:'Rachelle',lines:[['Castel 65 cl','2 casiers'],['Fanta 33 cl','3 casiers']],tot:'72 500 F',corr:false,locked:true},
+  {h:'11:40',who:'Rachelle',lines:[['Heineken 33 cl','+6 bouteilles']],tot:'+ 3 600 F',corr:'Erreur de saisie',locked:true}
+ ],
+ '28/10/2026':[
+  {h:'09:10',who:'Rachelle',lines:[['Coca-Cola 33 cl','2 casiers'],['Cristal 1,5 L','2 casiers']],tot:'31 920 F',corr:false,locked:true}
+ ]
+};
+const DAYS=Object.keys(RAVIT);
+let sc='normal', view='stock', period='inv', curSheet=null, dayIdx=0;
+const ICO={
+ box:'<path d="M4 7l8-4 8 4v10l-8 4-8-4z"/><path d="M4 7l8 4 8-4M12 11v10"/>',
+ low:'<path d="M12 8v5M12 17h.01"/><path d="M10.3 3.9L2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+ out:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+ ok:'<path d="M5 12l5 5L20 7"/>',
+ lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+ stock:'<rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9M9 13h6"/>',
+ pen:'<path d="M12 8v5M12 17h.01"/><circle cx="12" cy="12" r="9"/>',
+ ravit:'<path d="M3 7h13v10H3zM16 10h3l2 3v4h-5"/><circle cx="7" cy="18" r="1.5"/><circle cx="19" cy="18" r="1.5"/>',
+ prod:'<path d="M3 6h18M3 12h18M3 18h12"/>',
+ back:'<path d="M15 5l-7 7 7 7"/>'
+};
+const ico=(p,w=20)=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const F=n=>n.toLocaleString('fr-FR').replace(/\u202f|\u00a0/g,' ');
+const casRes=p=>{ const c=Math.floor(p.reste/p.bpc), b=p.reste%p.bpc; return c+' casier'+(c>1?'s':'')+' + '+b+' bouteille'+(b>1?'s':''); };
+const level=p=> p.reste===0 ? 'out' : p.reste<p.bpc ? 'low' : 'ok';
+const STLBL={ok:['s-ok',ico(ICO.ok,13),'En stock'],low:['s-low',ico(ICO.low,13),'Plus que '],out:['s-out',ico(ICO.out,13),'Épuisé']};
+function stBadge(p){ const l=level(p); const txt = l==='low' ? 'Plus que '+p.reste+' b.' : STLBL[l][2]; return `<span class="st ${STLBL[l][0]}">${STLBL[l][1]}${txt}</span>`; }
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.classList.remove('hide'); clearTimeout(window.__t); window.__t=setTimeout(()=>t.classList.add('hide'),2200); }
+
+// ---------- Navigation ----------
+const NAV=[
+ {id:'accueil',label:'Accueil',ico:'<path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'},
+ {id:'ventes',label:'Ventes',ico:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>'},
+ {id:'stock',label:'Stock',ico:'<rect x="3" y="4" width="18" height="5" rx="1.5"/><path d="M5 9v10h14V9M9 13h6"/>'},
+ {id:'inventaire',label:'Inventaire',ico:'<path d="M9 5h10M9 12h10M9 19h10"/><path d="M4 5l1 1 2-2M4 12l1 1 2-2M4 19l1 1 2-2"/>'},
+ {id:'plus',label:'Plus',ico:'<circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/>'}
+];
+function renderNav(){ document.getElementById('nav').innerHTML=NAV.map(t=>`<button class="tab ${t.id==='stock'?'on':''}" onclick="toast('${t.label} : écran du fichier suivant')">${ico(t.ico,24)}${t.label}</button>`).join(''); }
+
+const SUB=[{id:'stock',label:'Stock'},{id:'pen',label:'Pénurie'},{id:'ravit',label:'Ravitaillements'},{id:'prod',label:'Produits'}];
+function renderSub(){
+  const penCount=P.filter(p=>level(p)!=='ok').length;
+  document.getElementById('subtabs').innerHTML=SUB.map(s=>`<button class="${view===s.id?'on':''}" onclick="setView('${s.id}')">${s.label}${s.id==='pen'?`<span class="n">${penCount}</span>`:''}</button>`).join('');
+}
+function setView(v){ view=v; closeSheet(); render(); }
+function setScenario(v){ sc=v; render(); }
+
+function render(){
+  renderNav(); renderSub();
+  const head=document.getElementById('head');
+  const titles={stock:['Stock','Quantités et états par boisson'],pen:['Pénurie','Produits à réapprovisionner'],ravit:['Ravitaillements','Journée commerciale'],prod:['Produits','Fiches et historique des prix']};
+  head.innerHTML=`<h1>${titles[view][0]}</h1><p>${titles[view][1]}</p>`;
+  const c=document.getElementById('content');
+  if(view==='stock') c.innerHTML=stockView();
+  if(view==='pen') c.innerHTML=penView();
+  if(view==='ravit') c.innerHTML=ravitView();
+  if(view==='prod') c.innerHTML=prodView();
+  if(sc==='inv') {
+    c.innerHTML=`<div class="note" style="color:#7A5300;background:#FDF0CF;padding:12px;border-radius:16px">Inventaire en cours chez le gérant. Les quantités sont masquées jusqu'à la fin du comptage.</div>`+c.innerHTML;
+  }
+  if(sc==='expire') {
+    const note = `<div class="note" style="background:#FFE1DD;color:#9A2A1E;padding:12px;border-radius:16px;margin-bottom:12px"><b>Lecture seule.</b> L'abonnement est expiré : historiques et export PDF accessibles.</div>`;
+    c.innerHTML=note+c.innerHTML;
+  }
+}
+
+// ---------- Stock ----------
+function periodBar(){
+  const labels=[['inv','Depuis le dernier inventaire'],['mois','Mois en cours'],['libre','Période libre']];
+  return `<div class="period">${labels.map(([k,l])=>`<button class="${period===k?'on':''}" onclick="setPeriod('${k}')">${l}</button>`).join('')}</div>`;
+}
+function setPeriod(k){ period=k; render(); }
+function stockView(){
+  const hidden=sc==='inv';
+  const rows=P.map(p=>`<button class="band" onclick="openSheet('${p.id}')">
+    <span class="photo" style="background:${p.tile}">${ico(ICO.box,26)}</span>
+    <span class="info"><span class="name" style="display:block">${p.name}</span><span class="meta">${p.cat} · ${p.fmt}</span>
+      <span class="nums"><span>Acheté<b>${hidden?'—':p.ach}</b></span><span>Vendu<b>${hidden?'—':p.vendu}</b></span><span>Cassé<b>${hidden?'—':p.casse}</b></span></span></span>
+    <span class="reste">${hidden?stBadge({reste:p.reste,bpc:p.bpc,id:p.id}).replace(/Plus que \d+ b\./,'Plus que').replace(/Épuisé/,'Épuisé'):`<b>${casRes(p)}</b><small>${p.reste} bouteilles</small>${stBadge(p)}`}</span>
+  </button>`).join('');
+  const note = period==='inv'?'Les totaux repartent à zéro après chaque inventaire.':'Totaux sur la période choisie.';
+  return periodBar()+`<div class="note">${note}</div>`+rows;
+}
+
+// ---------- Pénurie ----------
+function penView(){
+  const list=P.filter(p=>level(p)!=='ok').sort((a,b)=>(a.reste===0?-1:0)-(b.reste===0?-1:0) || a.reste-b.reste);
+  if(!list.length) return '<div class="empty">Aucun produit en pénurie.</div>';
+  return `<div class="note">Épuisés d'abord, puis du plus bas au plus haut.</div>`+list.map(p=>`<div class="band" style="cursor:default">
+    <span class="photo" style="background:${p.tile}">${ico(ICO.box,26)}</span>
+    <span class="info"><span class="name" style="display:block">${p.name}</span><span class="meta">Seuil : 1 casier (${p.bpc} bouteilles)</span></span>
+    <span class="reste"><b>${casRes(p)}</b>${stBadge(p)}</span></div>`).join('')+
+    `<button class="pdf outline" onclick="toast('Partage WhatsApp de la liste de pénurie (en lecture)')">Partager la liste par WhatsApp</button>`;
+}
+
+// ---------- Ravitaillements ----------
+function ravitView(){
+  const day=DAYS[dayIdx];
+  const sel=`<div class="period">${DAYS.map((d,i)=>`<button class="${i===dayIdx?'on':''}" onclick="setDay(${i})">${d.slice(0,5)}</button>`).join('')}</div>`;
+  const list=RAVIT[day].map(r=>`<div class="ledger"><div><b>${r.h} · ${r.who}</b>
+    <small>${r.lines.map(l=>l[0]+' : '+l[1]).join(' · ')}</small>${r.corr?`<span class="tag">Correction</span><small>Motif : ${r.corr}</small>`:''}</div>
+    <div style="text-align:right"><span class="mono">${r.tot}</span><small>${r.locked?'Verrouillé':''}</small></div></div>`).join('');
+  return `${sel}<div class="note">Journée du ${day} · lecture seule</div>
+    <div class="lock">${ico(ICO.lock,16)} Ravitaillements validés, verrouillés</div>
+    <div class="list">${list}<div class="total"><span>Total du jour</span><span class="mono">${day===DAYS[0]?'76 100 F':'31 920 F'}</span></div></div>
+    <button class="pdf" onclick="toast('Export PDF de la liste du ${day}')">Télécharger en PDF</button>`;
+}
+function setDay(i){ dayIdx=i; render(); }
+
+// ---------- Produits et prix (consultation) ----------
+function prodView(){
+  return `<div class="only-owner">Les prix sont saisis par le gérant. Vous consultez ici les fiches et l'historique.</div>`+
+  P.map(p=>`<button class="band" onclick="openSheet('${p.id}')">
+    <span class="photo" style="background:${p.tile}">${ico(ICO.box,26)}</span>
+    <span class="info"><span class="name" style="display:block">${p.name}</span><span class="meta">${p.cat} · ${p.bpc} bouteilles par casier</span></span>
+    <span class="reste"><b>${F(p.sell)} F</b><small>à la bouteille</small></span></button>`).join('');
+}
+
+// ---------- Fiche détail ----------
+function openSheet(id){
+  const p=P.find(x=>x.id===id);
+  const motifs=CASSE_MOTIFS[id]||[];
+  const pBuy = p.buyC/p.bpc;                  // prix d'achat moyen par bouteille
+  const margin = p.sell - pBuy;              // marge brute par bouteille (propriétaire seulement)
+  const benef = Math.round(margin*p.vendu);  // bénéfice brut sur la période
+  const cassHtml= motifs.length ? motifs.map(m=>`<div class="ledger"><div><b>${m.m}</b><small>${m.d}</small></div><span class="mono">${m.q} b.</span></div>`).join('') : '<div class="ledger"><span style="color:var(--muted)">Aucune casse depuis le dernier inventaire</span></div>';
+  document.getElementById('sheet').innerHTML = `
+   <div class="sheet-top"><button onclick="closeSheet()" aria-label="Retour">${ico(ICO.back,20)}</button><h2>${p.name}</h2></div>
+   <div class="sheet-body">
+     <div class="card" style="display:flex;gap:14px;align-items:center">
+       <span class="photo" style="background:${p.tile};width:72px;height:72px">${ico(ICO.box,34)}</span>
+       <div><b style="font-size:17px">${p.name}</b><div style="color:var(--muted);font-size:13px">${p.cat} · ${p.bpc} bouteilles par casier</div>${stBadge(p)}</div>
+     </div>
+     <div class="sec">Reste actuel</div>
+     <div class="card"><div class="big">${casRes(p)}</div><div style="color:var(--muted);font-size:13px;margin-top:4px">${p.reste} bouteilles</div></div>
+     <div class="sec">Sur la période</div>
+     <div class="card">
+       <div class="kv"><span>Ravitaillé</span><b>${p.ach} b.</b></div>
+       <div class="kv"><span>Vendu</span><b>${p.vendu} b.</b></div>
+       <div class="kv"><span>Cassé / défaillant</span><b>${p.casse} b.</b></div>
+     </div>
+     <div class="sec">Casse détaillée</div>
+     <div class="list">${cassHtml}</div>
+     <div class="sec">Dernier inventaire</div>
+     <div class="card"><div class="kv"><span>Date</span><b>${p.inv}</b></div><div class="kv"><span>Quantité comptée</span><b>${p.invQ}</b></div></div>
+     <div class="sec">Prix</div>
+     <div class="card">
+       <div class="kv"><span>Prix d'achat moyen</span><b>${F(Math.round(pBuy))} F</b></div>
+       <div class="kv"><span>Prix de vente</span><b>${F(p.sell)} F</b></div>
+       ${p.promo?`<div class="kv"><span>Promo</span><b>${p.promo}</b></div>`:''}
+     </div>
+     <div class="only-owner">Réservé au propriétaire : marge brute par bouteille et bénéfice brut sur la période.</div>
+     <div class="card">
+       <div class="kv"><span>Marge brute par bouteille</span><b>${F(Math.round(margin))} F</b></div>
+       <div class="kv"><span>Bénéfice brut sur la période</span><b>${F(benef)} F</b></div>
+     </div>
+   </div>`;
+  document.getElementById('sheet').classList.remove('hide');
+}
+function closeSheet(){ document.getElementById('sheet').classList.add('hide'); }
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+# BarPro – Règles permanentes pour Cline
+
+## Projet
+BarPro est une PWA de gestion de bar et de buvette au Bénin, vendue par abonnement. Trois applications : Console BarPro (PDG, dossier console/), App Propriétaire et App Gérant (dossier pwa/, une seule PWA, deux interfaces selon le rôle). La logique métier vit dans core/.
+
+## Sources de vérité (à lire avant chaque tâche)
+1. docs/cahier-v4.md : règles métier. En cas de doute, il l'emporte.
+2. design/ : charte graphique et maquettes HTML. Les écrans doivent leur ressembler fidèlement.
+3. Si deux sources se contredisent ou si une règle manque, pose la question avant de coder. N'invente pas de règle métier.
+
+## Méthode de travail
+- Commence chaque tâche par un plan court : fichiers touchés, ordre, tests. Attends mon accord avant d'agir.
+- Une tâche à la fois. Ne sors pas du périmètre demandé. Ne refactorise pas ce qui n'est pas concerné.
+- Pour core/ : écris les tests d'abord, puis le code.
+- N'ajoute aucune dépendance sans me le demander et sans dire pourquoi. Ne modifie jamais docs/ ni design/.
+- À la fin : lance les tests et le build, liste ce qui est fait et ce qui reste, propose un message de commit.
+
+## Technique
+- TypeScript strict, pas de any. React + Vite + Tailwind. IndexedDB via Dexie. Service worker via vite-plugin-pwa (Workbox). Tests avec Vitest. PDF avec pdfmake. Graphiques avec Chart.js.
+- Code, noms de variables et de fichiers en anglais. Textes d'interface et commentaires en français simple.
+- Argent : toujours des entiers en F CFA (pas de décimales, jamais de flottants). Affichage : 1 000 F.
+- Dates : stockées en UTC, affichées en Africa/Porto-Novo (UTC+1). La journée commerciale va de 4 h 00 à 3 h 59, calculée par une fonction pure dans core/.
+- core/ n'importe ni React, ni le DOM, ni Dexie : fonctions pures et testables.
+
+## Architecture des données
+- Tout passe par une interface dataService. Les écrans n'accèdent jamais directement à la base. Implémentation locale d'abord (Dexie), serveur (Supabase) ensuite, sans toucher aux écrans.
+- Modèle par événements : chaque vente, ravitaillement, correction, casse et inventaire est une ligne AJOUTÉE. Aucune mise à jour ni suppression des lignes d'événements. Le stock est calculé en bouteilles à partir d'elles et affiché « X casiers + Y bouteilles ».
+
+## Règles métier irréversibles
+1. Seul le gérant vend, modifie ses tickets pendant 1 h, ravitaille, propose les corrections de ravitaillement, déclare la casse et fixe prix et fiches produit. Le propriétaire consulte, fait l'inventaire sur son téléphone, reçoit rapports et alertes, gère profil, gérant, abonnement et annexes. Il ne vend, ne ravitaille, ne déclare de casse ni ne modifie de prix.
+2. Le gérant ne voit jamais bénéfice, marge, valeur de casse ni rapport financier : ces données ne figurent même pas dans le code de ses fichiers. Utilise des types séparés (par exemple ManagerProduct sans champs de marge) pour que ces champs n'existent pas dans les données du gérant.
+3. Il n'existe ni « somme à verser » ni « bénéfice après casse ». Le propriétaire voit bénéfice brut et casse séparément.
+4. Vente à la bouteille uniquement. Promo « N bouteilles pour X F » : total = floor(q/N) × X + (q mod N) × prix unitaire.
+5. Stock théorique = dernier inventaire + ravitaillements validés (corrections comprises) − ventes − casse. Écart = compté − théorique, produit par produit, sans compensation. Le stock compté devient la nouvelle référence.
+6. Inventaire en aveugle : le stock théorique n'est jamais affiché pendant le comptage ; toute boisson doit être comptée (0 explicite).
+7. Ravitaillement validé = verrouillé. Correction par une nouvelle ligne avec motif obligatoire, proposée par le gérant, signalée au propriétaire. La casse n'a aucun champ de décision et est valorisée automatiquement au coût moyen pondéré.
+8. Seuil d'alerte = 1 casier par défaut. Vert, jaune (pulsation douce), rouge non cliquable : toujours avec icône et texte.
+9. Le délai d'1 h d'un ticket utilise l'heure serveur en ligne et un chronomètre monotone hors-ligne. Un retour d'horloge ou un écart de plus de 5 minutes marque le ticket « heure suspecte ».
+10. Un lien est à usage unique, lié à la buvette et au premier appareil ; sa validité suit le statut du bar (normal, lecture seule, suspendu).
+
+## Interface
+- Appliquer la charte de design/ : Forêt #0B3322, Citron #8BFA5A, Sous-bois #1F5C3F, Papier #F5F8F3, Alerte #F5B841, Erreur #FF6B5B, Neutre #5E7266 ; Inter et JetBrains Mono (montants, codes, heures) ; rayons 8, 14, 24, 999 ; boutons en capsule ; icônes trait 1,75 px ; mode clair et sombre ; jamais de dégradé.
+- Mobile d'abord, cibles tactiles d'au moins 48 px, prefers-reduced-motion respecté, photos WebP sous 60 Ko, fluide sur Android d'entrée de gamme.
+- Toute action définitive demande une confirmation. Messages d'erreur en français simple. Ton : direct, chaleureux, précis.
+
+## Interdits
+- Pas de localStorage pour les données métier (IndexedDB uniquement).
+- Pas de suppression définitive de transactions.
+- Pas de données financières dans les écrans ou les requêtes du gérant.
+- Pas de secret ni de clé API dans le code : variables d'environnement.
