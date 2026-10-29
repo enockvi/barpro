@@ -18,6 +18,8 @@ export interface Product {
   promo: Promo | null;
   alertThreshold: number;   // en casiers (défaut: 1)
   active: boolean;
+  tile?: string;
+  stock?: number;
   photoPath?: string;       // chemin relatif vers l'image
   driveFileId?: string;     // id fichier Drive (si importé)
 }
