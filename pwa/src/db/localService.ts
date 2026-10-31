@@ -170,9 +170,53 @@ export class LocalDataService implements DataService {
     await db.pending.add({ clientUUID: clientUUID(), event, sentAt: Date.now() });
   }
 
+  // ─── Synchronisation batch hors-ligne ────────────────────────────────────────
+  // En ligne : envoyer un lot complet et marquer chaque UUID comme sync.
+  // L'identifiant unique (clientUUID) garantit l'idempotence : un envoi répété
+  // ne crée jamais de doublon côté serveur.
+
+  async syncBatch(): Promise<{ sent: number; errors: string[] }> {
+    const rows = await db.pending.toArray();
+    if (rows.length === 0) return { sent: 0, errors: [] };
+
+    const events = rows.map((r) => r.event);
+    const uuids = rows.map((r) => r.clientUUID);
+    const errors: string[] = [];
+
+    try {
+      // Simuler l'envoi au serveur (placeholder pour T13)
+      // En production : await fetch('/api/sync', { method: 'POST', body: JSON.stringify({ events }) })
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Marquer tous comme sync (idempotent : les doublons sont ignorés par le serveur)
+      for (const uuid of uuids) {
+        await this.markSynced(uuid);
+      }
+
+      await this.setSyncStatus({
+        connected: true,
+        pendingCount: 0,
+        lastSyncAt: Date.now(),
+      });
+
+      return { sent: events.length, errors };
+    } catch (err) {
+      errors.push(err instanceof Error ? err.message : 'Erreur inconnue');
+      await this.setSyncStatus({ connected: false, pendingCount: rows.length, error: errors.join('; ') });
+      return { sent: 0, errors };
+    }
+  }
+
+  // Déclencher la synchro quand le réseau revient
+  async autoSyncOnOnline(): Promise<void> {
+    if (navigator.onLine) {
+      await this.syncBatch();
+    }
+  }
+
   async getSyncStatus(): Promise<SyncStatus> {
     const row = await db.syncStatus.where('status').equals('current').first();
-    return row ?? { connected: true, pendingCount: 0, lastSyncAt: null };
+    return row ?? { connected: navigator.onLine, pendingCount: 0, lastSyncAt: null };
   }
 
   async setSyncStatus(status: Partial<SyncStatus>): Promise<void> {
